@@ -16,5 +16,17 @@ namespace Client
         {
             InitializeComponent();
         }
+
+        private void LoginButton_Click(object sender, EventArgs e)
+        {
+            if (this.usernameTextBox.Text.ToCharArray().Length < 3)
+            {
+                MessageBox.Show("The username must be at least 3 characters long!", "Chat", MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
+            }
+            else
+            {
+                // Connect to server
+            }
+        }
     }
 }

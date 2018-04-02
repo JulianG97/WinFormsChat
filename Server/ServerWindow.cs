@@ -17,6 +17,7 @@ namespace Server
         private bool isRunning;
         private List<User> users;
         private TcpListener listener;
+        private Thread listenerThread;
 
         public ServerWindow()
         {
@@ -41,20 +42,21 @@ namespace Server
                 {
                     try
                     {
+                        this.isRunning = true;
+                        this.portTextBox.Enabled = false;
+
                         this.listener = new TcpListener(IPAddress.Any, port);
                         this.listener.Start();
 
-                        this.isRunning = true;
-                        this.portTextBox.Enabled = false;
-                        this.AddLineToLog("The server was successfully started!");
+                        this.listenerThread = new Thread(this.StartListening);
+                        this.listenerThread.Start();
 
-                        StartListening();
+                        this.AddLineToLog("The server was successfully started!");
                     }
                     catch
                     {
                         this.isRunning = false;
                         this.portTextBox.Enabled = true;
-                        this.AddLineToLog("The server was successfully stopped!");
 
                         MessageBox.Show("The server couldn't be started!", "Chat - Server", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
                     }
@@ -122,6 +124,7 @@ namespace Server
             }
             else
             {
+                this.listener.Stop();
                 this.isRunning = false;
                 this.portTextBox.Enabled = true;
                 this.AddLineToLog("The server was successfully stopped!");
