@@ -14,7 +14,7 @@ Coming soon...
 ### Protocol Types
 | Type | Full Name | Value | Length | Description |
 | ---- | --------- | ----- | ------ | ----------- |
-| LI | Login | Username | 0 - 10 (+ 6) | Login request sent from the client to the server |
+| LI | Login | Username | 3 - 10 (+ 6) | Login request sent from the client to the server |
 | LO | Logout | Username | 3 - 10 (+ 6) | Logout message sent from the client to the server |
 | IA | IsAlive | - | 0 (+ 6) | Is alive message sent in a certain frequency from the client to the server and from the server to the client |
 | ME | Message | Message | 1 - 500 (+ 6) | Message sent from the client to the server |
