@@ -1,6 +1,8 @@
 # WinFormsChat
 A simple windows forms chat written in C#
 
+![alt text](https://raw.githubusercontent.com/JulianG97/WinFormsChat/master/Client/icon.ico)
+
 ## Features
 Coming soon...
 
