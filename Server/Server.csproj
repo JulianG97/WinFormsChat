@@ -56,6 +56,7 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="User.cs" />
     <EmbeddedResource Include="ServerWindow.resx">
       <DependentUpon>ServerWindow.cs</DependentUpon>
     </EmbeddedResource>
@@ -83,6 +84,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="icon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Network\" />
+    <Folder Include="Protocol\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

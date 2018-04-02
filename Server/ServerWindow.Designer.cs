@@ -35,7 +35,7 @@
             this.portTextBox = new System.Windows.Forms.TextBox();
             this.startButton = new System.Windows.Forms.Button();
             this.stopButton = new System.Windows.Forms.Button();
-            this.richTextBox1 = new System.Windows.Forms.RichTextBox();
+            this.logRichTextBox = new System.Windows.Forms.RichTextBox();
             this.SuspendLayout();
             // 
             // ipAddressLabel
@@ -86,6 +86,7 @@
             this.startButton.TabIndex = 0;
             this.startButton.Text = "Start";
             this.startButton.UseVisualStyleBackColor = true;
+            this.startButton.Click += new System.EventHandler(this.StartButton_Click);
             // 
             // stopButton
             // 
@@ -96,25 +97,26 @@
             this.stopButton.TabIndex = 1;
             this.stopButton.Text = "Stop";
             this.stopButton.UseVisualStyleBackColor = true;
+            this.stopButton.Click += new System.EventHandler(this.StopButton_Click);
             // 
-            // richTextBox1
+            // logRichTextBox
             // 
-            this.richTextBox1.BackColor = System.Drawing.SystemColors.Window;
-            this.richTextBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.richTextBox1.Location = new System.Drawing.Point(26, 130);
-            this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.ReadOnly = true;
-            this.richTextBox1.Size = new System.Drawing.Size(750, 410);
-            this.richTextBox1.TabIndex = 6;
-            this.richTextBox1.TabStop = false;
-            this.richTextBox1.Text = "";
+            this.logRichTextBox.BackColor = System.Drawing.SystemColors.Window;
+            this.logRichTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.logRichTextBox.Location = new System.Drawing.Point(26, 130);
+            this.logRichTextBox.Name = "logRichTextBox";
+            this.logRichTextBox.ReadOnly = true;
+            this.logRichTextBox.Size = new System.Drawing.Size(750, 410);
+            this.logRichTextBox.TabIndex = 6;
+            this.logRichTextBox.TabStop = false;
+            this.logRichTextBox.Text = "";
             // 
             // ServerWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 564);
-            this.Controls.Add(this.richTextBox1);
+            this.Controls.Add(this.logRichTextBox);
             this.Controls.Add(this.stopButton);
             this.Controls.Add(this.startButton);
             this.Controls.Add(this.portTextBox);
@@ -139,7 +141,7 @@
         private System.Windows.Forms.TextBox portTextBox;
         private System.Windows.Forms.Button startButton;
         private System.Windows.Forms.Button stopButton;
-        private System.Windows.Forms.RichTextBox richTextBox1;
+        private System.Windows.Forms.RichTextBox logRichTextBox;
     }
 }
 
