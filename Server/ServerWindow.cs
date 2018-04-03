@@ -18,6 +18,7 @@ namespace Server
         private List<User> users;
         private TcpListener listener;
         private Thread listenerThread;
+        private static object locker;
 
         public ServerWindow()
         {
@@ -43,6 +44,7 @@ namespace Server
                     try
                     {
                         this.isRunning = true;
+                        locker = new object();
                         this.portTextBox.Enabled = false;
                         this.ipAddressTextBox.Text = this.GetExternalIPAddress().ToString();
 
@@ -144,6 +146,10 @@ namespace Server
         private void HandleNewSession(object data)
         {
             TcpClient client = (TcpClient)data;
+            NetworkWatcher networkWatcher = new NetworkWatcher(client);
+            networkWatcher.ConnectionLost += this.ConnectionLost;
+            networkWatcher.DataReceived += this.DataReceived;
+            networkWatcher.Start();
         }
 
         private void StopButton_Click(object sender, EventArgs e)
@@ -160,6 +166,63 @@ namespace Server
                 this.portTextBox.Enabled = true;
                 this.AddLineToLog("The server was successfully stopped!");
             }
+        }
+
+        private bool CheckIfLegalUsername(string username)
+        {
+            if (username.Length >= 3 && username.Length <= 10 && username != "SERVER")
+            {
+                lock (locker)
+                {
+                    foreach (User user in this.users)
+                    {
+                        if (user.Username == username)
+                        {
+                            return false;
+                        }
+                    }
+
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private void CreateNewUser(string username, string sessionkey, TcpClient client)
+        {
+            lock (locker)
+            {
+                this.users.Add(new User(username, client, sessionkey));
+            }
+        }
+
+        private void DataReceived(object sender, DataReceivedEventArgs args)
+        {
+            if (args.Protocol.Type.SequenceEqual(ProtocolType.LogIn))
+            {
+                if (CheckIfLegalUsername(Encoding.ASCII.GetString(args.Protocol.Content)) == true)
+                {
+                    Protocol protocol = ProtocolCreator.SessionKey();
+                    this.CreateNewUser(Encoding.ASCII.GetString(args.Protocol.Content), Encoding.ASCII.GetString(protocol.Content), args.Client);
+
+                    NetworkWatcher networkWatcher = (NetworkWatcher)sender;
+                    networkWatcher.Send(protocol);
+                }
+            }
+            else if (args.Protocol.Type.SequenceEqual(ProtocolType.LogOut))
+            {
+
+            }
+            else if (args.Protocol.Type.SequenceEqual(ProtocolType.Message))
+            {
+
+            }
+        }
+
+        private void ConnectionLost(object sender, ConnectionLostEventArgs args)
+        {
+
         }
     }
 }

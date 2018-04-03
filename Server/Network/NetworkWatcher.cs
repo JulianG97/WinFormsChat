@@ -77,7 +77,13 @@ namespace Server
                     receivedBytes.Add(buffer[0]);
                 }
 
-                this.FireOnDataReceived(receivedBytes.ToArray());
+                if (receivedBytes.Count >= 6)
+                {
+                    if (receivedBytes[0] == 67 && receivedBytes[1] == 72 && receivedBytes[2] == 65 && receivedBytes[3] == 84)
+                    {
+                        this.FireOnDataReceived(receivedBytes.ToArray());
+                    }
+                }
             }
         }
 
@@ -85,7 +91,7 @@ namespace Server
         {
             if (this.DataReceived != null)
             {
-                this.DataReceived(this, new DataReceivedEventArgs(data));
+                this.DataReceived(this, new DataReceivedEventArgs(data, this.client));
             }
         }
 

@@ -10,10 +10,11 @@ namespace Server
 {
     public class User
     {
-        public User(string username, TcpClient client)
+        public User(string username, TcpClient client, string sessionkey)
         {
             this.Username = username;
             this.Client = client;
+            this.SessionKey = sessionkey;
         }
 
         public string Username
@@ -23,6 +24,12 @@ namespace Server
         }
 
         public TcpClient Client
+        {
+            get;
+            private set;
+        }
+
+        public string SessionKey
         {
             get;
             private set;

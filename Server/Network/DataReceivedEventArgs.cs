@@ -1,13 +1,23 @@
-﻿namespace Server
+﻿using System.Net;
+using System.Net.Sockets;
+
+namespace Server
 {
     public class DataReceivedEventArgs
     {
-        public DataReceivedEventArgs(byte[] data)
+        public DataReceivedEventArgs(byte[] data, TcpClient client)
         {
-            this.Data = data;
+            this.Protocol = new Protocol(data);
+            this.Client = client;
         }
 
-        public byte[] Data
+        public Protocol Protocol
+        {
+            get;
+            private set;
+        }
+
+        public TcpClient Client
         {
             get;
             private set;
