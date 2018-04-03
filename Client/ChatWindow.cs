@@ -138,7 +138,7 @@ namespace Client
             {
                 if (this.sendMessageTextBox.Text.Length >= 1)
                 {
-                    this.networkWatcher.Send(ProtocolCreator.Message(this.sendMessageTextBox.Text, this.sessionkey));
+                    this.networkWatcher.Send(ProtocolCreator.Message(this.username, this.sendMessageTextBox.Text, this.sessionkey));
                     this.sendMessageTextBox.Text = string.Empty;
                 }
             };

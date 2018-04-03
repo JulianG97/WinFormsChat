@@ -26,9 +26,9 @@ namespace Client
             return protocol;
         }
 
-        public static Protocol Message(string message, string sessionkey)
+        public static Protocol Message(string username, string message, string sessionkey)
         {
-            Protocol protocol = new Protocol(ProtocolType.Message, Encoding.ASCII.GetBytes(message + "-" + sessionkey));
+            Protocol protocol = new Protocol(ProtocolType.Message, Encoding.ASCII.GetBytes(username + "-" + message + "-" + sessionkey));
             return protocol;
         }
     }
