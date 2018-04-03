@@ -22,5 +22,5 @@ Coming soon...
 | AU | Add User | Username | 3 - 10 (+ 7) | Message sent from the server to the client to add a user to the online user box at the client |
 | RU | Remove User | Username | 3 - 10 (+ 7) | Message sent from the server to the client to remove a user from the online user box at the client |
 | SE | Session Key | SessionKey | 32 (+ 7) | Session key sent from the server to the client for identification purposes |
-| ME | Message | Message-SessionKey | 34 - 533 (+ 7) | Message sent from the client to the server |
+| ME | Message | Username-Message-SessionKey | 38 - 544 (+ 7) | Message sent from the client to the server |
 | NM | New Message | Message | 1 - 500 (+ 7) | Message sent from the server to all clients |
