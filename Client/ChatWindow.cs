@@ -115,6 +115,12 @@ namespace Client
                 newMessageBox[this.messageRichTextBox.Lines.Length] = message;
 
                 this.messageRichTextBox.Lines = newMessageBox;
+
+                if (this.messageRichTextBox.Lines.Length > 1)
+                {
+                    this.messageRichTextBox.SelectionStart = this.messageRichTextBox.Text.Length - this.messageRichTextBox.Lines[this.messageRichTextBox.Lines.Length - 1].Length - 1;
+                    this.messageRichTextBox.ScrollToCaret();
+                }
             };
 
             if (this.InvokeRequired)
