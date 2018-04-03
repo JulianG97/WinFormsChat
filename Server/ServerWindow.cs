@@ -228,6 +228,8 @@ namespace Server
 
                         networkWatcher.Send(protocol);
 
+                        Thread.Sleep(100);
+
                         lock (locker)
                         {
                             // Sends the new user all online users
@@ -259,13 +261,36 @@ namespace Server
             {
                 if (args.Protocol.Content != null && args.Protocol.Content.Length >= 1)
                 {
-                    string messageAndSessionKey = Encoding.ASCII.GetString(args.Protocol.Content);
+                    string message = Encoding.ASCII.GetString(args.Protocol.Content);
 
-                    string[] messageAndSessionKeyArray = messageAndSessionKey.Split('-');
+                    string[] messageArray = message.Split('-');
 
-                    if (messageAndSessionKeyArray.Length == 2)
+                    if (messageArray.Length == 3)
                     {
+                        bool verifiedMessage = false;
 
+                        lock (locker)
+                        {
+                            foreach (User user in this.users)
+                            {
+                                if (user.Username == messageArray[0] && user.SessionKey == messageArray[2])
+                                {
+                                    verifiedMessage = true;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (verifiedMessage == true)
+                        {
+                            lock (locker)
+                            {
+                                foreach (User user in this.users)
+                                {
+                                    user.NetworkWatcher.Send(ProtocolCreator.NewMessage(messageArray[0] + ": " + messageArray[1]));
+                                }
+                            }
+                        }
                     }
                 }
             }
