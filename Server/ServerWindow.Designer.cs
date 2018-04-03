@@ -29,39 +29,41 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ServerWindow));
-            this.ipAddressLabel = new System.Windows.Forms.Label();
-            this.ipAddressTextBox = new System.Windows.Forms.TextBox();
+            this.ipAddressPubLabel = new System.Windows.Forms.Label();
+            this.ipAddressPubTextBox = new System.Windows.Forms.TextBox();
             this.portLabel = new System.Windows.Forms.Label();
             this.portTextBox = new System.Windows.Forms.TextBox();
             this.startButton = new System.Windows.Forms.Button();
             this.stopButton = new System.Windows.Forms.Button();
             this.logRichTextBox = new System.Windows.Forms.RichTextBox();
+            this.ipAddressPrivLabel = new System.Windows.Forms.Label();
+            this.ipAddressPrivTextBox = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
-            // ipAddressLabel
+            // ipAddressPubLabel
             // 
-            this.ipAddressLabel.AutoSize = true;
-            this.ipAddressLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ipAddressLabel.Location = new System.Drawing.Point(19, 16);
-            this.ipAddressLabel.Name = "ipAddressLabel";
-            this.ipAddressLabel.Size = new System.Drawing.Size(187, 37);
-            this.ipAddressLabel.TabIndex = 0;
-            this.ipAddressLabel.Text = "IP address: ";
+            this.ipAddressPubLabel.AutoSize = true;
+            this.ipAddressPubLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ipAddressPubLabel.Location = new System.Drawing.Point(19, 16);
+            this.ipAddressPubLabel.Name = "ipAddressPubLabel";
+            this.ipAddressPubLabel.Size = new System.Drawing.Size(305, 37);
+            this.ipAddressPubLabel.TabIndex = 0;
+            this.ipAddressPubLabel.Text = "IP address (Public): ";
             // 
-            // ipAddressTextBox
+            // ipAddressPubTextBox
             // 
-            this.ipAddressTextBox.Enabled = false;
-            this.ipAddressTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ipAddressTextBox.Location = new System.Drawing.Point(202, 13);
-            this.ipAddressTextBox.Name = "ipAddressTextBox";
-            this.ipAddressTextBox.Size = new System.Drawing.Size(258, 44);
-            this.ipAddressTextBox.TabIndex = 1;
+            this.ipAddressPubTextBox.Enabled = false;
+            this.ipAddressPubTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ipAddressPubTextBox.Location = new System.Drawing.Point(329, 16);
+            this.ipAddressPubTextBox.Name = "ipAddressPubTextBox";
+            this.ipAddressPubTextBox.Size = new System.Drawing.Size(258, 44);
+            this.ipAddressPubTextBox.TabIndex = 1;
             // 
             // portLabel
             // 
             this.portLabel.AutoSize = true;
             this.portLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.portLabel.Location = new System.Drawing.Point(19, 72);
+            this.portLabel.Location = new System.Drawing.Point(19, 156);
             this.portLabel.Name = "portLabel";
             this.portLabel.Size = new System.Drawing.Size(94, 37);
             this.portLabel.TabIndex = 2;
@@ -70,7 +72,7 @@
             // portTextBox
             // 
             this.portTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.portTextBox.Location = new System.Drawing.Point(202, 69);
+            this.portTextBox.Location = new System.Drawing.Point(329, 149);
             this.portTextBox.MaxLength = 5;
             this.portTextBox.Name = "portTextBox";
             this.portTextBox.Size = new System.Drawing.Size(258, 44);
@@ -80,9 +82,9 @@
             // startButton
             // 
             this.startButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.startButton.Location = new System.Drawing.Point(477, 34);
+            this.startButton.Location = new System.Drawing.Point(625, 14);
             this.startButton.Name = "startButton";
-            this.startButton.Size = new System.Drawing.Size(141, 63);
+            this.startButton.Size = new System.Drawing.Size(141, 85);
             this.startButton.TabIndex = 0;
             this.startButton.Text = "Start";
             this.startButton.UseVisualStyleBackColor = true;
@@ -91,9 +93,9 @@
             // stopButton
             // 
             this.stopButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.stopButton.Location = new System.Drawing.Point(635, 34);
+            this.stopButton.Location = new System.Drawing.Point(625, 116);
             this.stopButton.Name = "stopButton";
-            this.stopButton.Size = new System.Drawing.Size(141, 63);
+            this.stopButton.Size = new System.Drawing.Size(141, 85);
             this.stopButton.TabIndex = 1;
             this.stopButton.Text = "Stop";
             this.stopButton.UseVisualStyleBackColor = true;
@@ -103,7 +105,7 @@
             // 
             this.logRichTextBox.BackColor = System.Drawing.SystemColors.Window;
             this.logRichTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.logRichTextBox.Location = new System.Drawing.Point(26, 130);
+            this.logRichTextBox.Location = new System.Drawing.Point(26, 206);
             this.logRichTextBox.Name = "logRichTextBox";
             this.logRichTextBox.ReadOnly = true;
             this.logRichTextBox.Size = new System.Drawing.Size(750, 410);
@@ -111,18 +113,39 @@
             this.logRichTextBox.TabStop = false;
             this.logRichTextBox.Text = "";
             // 
+            // ipAddressPrivLabel
+            // 
+            this.ipAddressPrivLabel.AutoSize = true;
+            this.ipAddressPrivLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ipAddressPrivLabel.Location = new System.Drawing.Point(19, 84);
+            this.ipAddressPrivLabel.Name = "ipAddressPrivLabel";
+            this.ipAddressPrivLabel.Size = new System.Drawing.Size(316, 37);
+            this.ipAddressPrivLabel.TabIndex = 7;
+            this.ipAddressPrivLabel.Text = "IP address (Private): ";
+            // 
+            // ipAddressPrivTextBox
+            // 
+            this.ipAddressPrivTextBox.Enabled = false;
+            this.ipAddressPrivTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ipAddressPrivTextBox.Location = new System.Drawing.Point(329, 81);
+            this.ipAddressPrivTextBox.Name = "ipAddressPrivTextBox";
+            this.ipAddressPrivTextBox.Size = new System.Drawing.Size(258, 44);
+            this.ipAddressPrivTextBox.TabIndex = 8;
+            // 
             // ServerWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 564);
+            this.ClientSize = new System.Drawing.Size(800, 640);
+            this.Controls.Add(this.ipAddressPrivTextBox);
+            this.Controls.Add(this.ipAddressPrivLabel);
             this.Controls.Add(this.logRichTextBox);
             this.Controls.Add(this.stopButton);
             this.Controls.Add(this.startButton);
             this.Controls.Add(this.portTextBox);
             this.Controls.Add(this.portLabel);
-            this.Controls.Add(this.ipAddressTextBox);
-            this.Controls.Add(this.ipAddressLabel);
+            this.Controls.Add(this.ipAddressPubTextBox);
+            this.Controls.Add(this.ipAddressPubLabel);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
@@ -135,13 +158,15 @@
 
         #endregion
 
-        private System.Windows.Forms.Label ipAddressLabel;
-        private System.Windows.Forms.TextBox ipAddressTextBox;
+        private System.Windows.Forms.Label ipAddressPubLabel;
+        private System.Windows.Forms.TextBox ipAddressPubTextBox;
         private System.Windows.Forms.Label portLabel;
         private System.Windows.Forms.TextBox portTextBox;
         private System.Windows.Forms.Button startButton;
         private System.Windows.Forms.Button stopButton;
         private System.Windows.Forms.RichTextBox logRichTextBox;
+        private System.Windows.Forms.Label ipAddressPrivLabel;
+        private System.Windows.Forms.TextBox ipAddressPrivTextBox;
     }
 }
 

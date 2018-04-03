@@ -23,6 +23,7 @@ namespace Server
         public ServerWindow()
         {
             InitializeComponent();
+            this.FormClosing += this.CleanClosing;
         }
 
         private void StartButton_Click(object sender, EventArgs e)
@@ -46,7 +47,8 @@ namespace Server
                         this.isRunning = true;
                         locker = new object();
                         this.portTextBox.Enabled = false;
-                        this.ipAddressTextBox.Text = this.GetExternalIPAddress().ToString();
+                        this.ipAddressPubTextBox.Text = this.GetExternalIPAddress().ToString();
+                        this.ipAddressPrivTextBox.Text = this.GetInternalIPAddress().ToString();
 
                         this.users = new List<User>();
 
@@ -62,7 +64,8 @@ namespace Server
                     {
                         this.isRunning = false;
                         this.portTextBox.Enabled = true;
-                        this.ipAddressTextBox.Text = string.Empty;
+                        this.ipAddressPubTextBox.Text = string.Empty;
+                        this.ipAddressPrivTextBox.Text = string.Empty;
 
                         if (this.listener != null)
                         {
@@ -73,6 +76,11 @@ namespace Server
                     }
                 }
             }
+        }
+
+        private void CleanClosing(object sender, FormClosingEventArgs args)
+        {
+
         }
 
         private IPAddress GetExternalIPAddress()
@@ -94,6 +102,21 @@ namespace Server
             }
 
             return IPAddress.Parse(externalIP);
+        }
+
+        private IPAddress GetInternalIPAddress()
+        {
+            IPAddress[] localIPs = Dns.GetHostAddresses(Dns.GetHostName());
+
+            foreach (IPAddress ip in localIPs)
+            {
+                if (ip.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    return ip;
+                }
+            }
+
+            return IPAddress.Parse("0.0.0.0");
         }
 
         private int CheckPort(string portString)
@@ -176,7 +199,8 @@ namespace Server
             {
                 this.listener.Stop();
                 this.isRunning = false;
-                this.ipAddressTextBox.Text = string.Empty;
+                this.ipAddressPubTextBox.Text = string.Empty;
+                this.ipAddressPrivTextBox.Text = string.Empty;
                 this.portTextBox.Enabled = true;
                 this.AddLineToLog("The server was successfully stopped!");
             }
