@@ -8,9 +8,6 @@ namespace Client
 {
     public class ProtocolCreator
     {
-        private static Random random = new Random();
-        private static object locker = new object();
-
         public static Protocol IsAlive()
         {
             Protocol protocol = new Protocol(ProtocolType.IsAlive, new byte[0]);

@@ -44,11 +44,14 @@ namespace Server
                     {
                         this.isRunning = true;
                         this.portTextBox.Enabled = false;
+                        this.ipAddressTextBox.Text = this.GetExternalIPAddress().ToString();
+
+                        this.users = new List<User>();
 
                         this.listener = new TcpListener(IPAddress.Any, port);
                         this.listener.Start();
 
-                        this.listenerThread = new Thread(this.StartListening);
+                        this.listenerThread = new Thread(this.AcceptConnections);
                         this.listenerThread.Start();
 
                         this.AddLineToLog("The server was successfully started!");
@@ -57,11 +60,38 @@ namespace Server
                     {
                         this.isRunning = false;
                         this.portTextBox.Enabled = true;
+                        this.ipAddressTextBox.Text = string.Empty;
+
+                        if (this.listener != null)
+                        {
+                            this.listener.Stop();
+                        }
 
                         MessageBox.Show("The server couldn't be started!", "Chat - Server", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
                     }
                 }
             }
+        }
+
+        private IPAddress GetExternalIPAddress()
+        {
+            string externalIPString = new WebClient().DownloadString("http://icanhazip.com");
+
+            char[] externalIPArray = externalIPString.ToCharArray();
+
+            string externalIP = string.Empty;
+
+            for (int i = 0; i < externalIPArray.Length; i++)
+            {
+                if (externalIPArray[i] == '\n')
+                {
+                    continue;
+                }
+
+                externalIP = externalIP + externalIPArray[i];
+            }
+
+            return IPAddress.Parse(externalIP);
         }
 
         private int CheckPort(string portString)
@@ -81,7 +111,7 @@ namespace Server
             }
         }
 
-        private void StartListening()
+        private void AcceptConnections()
         {
             while (this.isRunning == true)
             {
@@ -126,6 +156,7 @@ namespace Server
             {
                 this.listener.Stop();
                 this.isRunning = false;
+                this.ipAddressTextBox.Text = string.Empty;
                 this.portTextBox.Enabled = true;
                 this.AddLineToLog("The server was successfully stopped!");
             }
