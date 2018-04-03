@@ -35,6 +35,10 @@
             this.loginButton = new System.Windows.Forms.Button();
             this.chatLabel = new System.Windows.Forms.Label();
             this.copyrightLabel = new System.Windows.Forms.Label();
+            this.ipAddressLabel = new System.Windows.Forms.Label();
+            this.portLabel = new System.Windows.Forms.Label();
+            this.ipAddressTextBox = new System.Windows.Forms.TextBox();
+            this.portTextBox = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.iconPictureBox)).BeginInit();
             this.SuspendLayout();
             // 
@@ -52,7 +56,7 @@
             // 
             this.usernameLabel.AutoSize = true;
             this.usernameLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.875F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.usernameLabel.Location = new System.Drawing.Point(31, 474);
+            this.usernameLabel.Location = new System.Drawing.Point(31, 594);
             this.usernameLabel.Name = "usernameLabel";
             this.usernameLabel.Size = new System.Drawing.Size(210, 42);
             this.usernameLabel.TabIndex = 1;
@@ -61,20 +65,20 @@
             // usernameTextBox
             // 
             this.usernameTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.875F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.usernameTextBox.Location = new System.Drawing.Point(235, 474);
+            this.usernameTextBox.Location = new System.Drawing.Point(235, 594);
             this.usernameTextBox.MaxLength = 10;
             this.usernameTextBox.Name = "usernameTextBox";
             this.usernameTextBox.Size = new System.Drawing.Size(300, 49);
-            this.usernameTextBox.TabIndex = 2;
+            this.usernameTextBox.TabIndex = 3;
             // 
             // loginButton
             // 
             this.loginButton.BackColor = System.Drawing.SystemColors.ControlLight;
             this.loginButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.875F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.loginButton.Location = new System.Drawing.Point(571, 460);
+            this.loginButton.Location = new System.Drawing.Point(573, 582);
             this.loginButton.Name = "loginButton";
             this.loginButton.Size = new System.Drawing.Size(154, 76);
-            this.loginButton.TabIndex = 3;
+            this.loginButton.TabIndex = 4;
             this.loginButton.Text = "Login";
             this.loginButton.UseVisualStyleBackColor = false;
             this.loginButton.Click += new System.EventHandler(this.LoginButton_Click);
@@ -92,17 +96,59 @@
             // copyrightLabel
             // 
             this.copyrightLabel.AutoSize = true;
-            this.copyrightLabel.Location = new System.Drawing.Point(158, 545);
+            this.copyrightLabel.Location = new System.Drawing.Point(158, 670);
             this.copyrightLabel.Name = "copyrightLabel";
             this.copyrightLabel.Size = new System.Drawing.Size(437, 25);
             this.copyrightLabel.TabIndex = 5;
             this.copyrightLabel.Text = "Copyright © 2018 Julian and Patrick Gamauf";
             // 
+            // ipAddressLabel
+            // 
+            this.ipAddressLabel.AutoSize = true;
+            this.ipAddressLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.875F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ipAddressLabel.Location = new System.Drawing.Point(31, 458);
+            this.ipAddressLabel.Name = "ipAddressLabel";
+            this.ipAddressLabel.Size = new System.Drawing.Size(210, 42);
+            this.ipAddressLabel.TabIndex = 6;
+            this.ipAddressLabel.Text = "IP Address:";
+            // 
+            // portLabel
+            // 
+            this.portLabel.AutoSize = true;
+            this.portLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.875F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.portLabel.Location = new System.Drawing.Point(31, 528);
+            this.portLabel.Name = "portLabel";
+            this.portLabel.Size = new System.Drawing.Size(96, 42);
+            this.portLabel.TabIndex = 7;
+            this.portLabel.Text = "Port:";
+            // 
+            // ipAddressTextBox
+            // 
+            this.ipAddressTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.875F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ipAddressTextBox.Location = new System.Drawing.Point(235, 455);
+            this.ipAddressTextBox.MaxLength = 15;
+            this.ipAddressTextBox.Name = "ipAddressTextBox";
+            this.ipAddressTextBox.Size = new System.Drawing.Size(300, 49);
+            this.ipAddressTextBox.TabIndex = 1;
+            // 
+            // portTextBox
+            // 
+            this.portTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.875F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.portTextBox.Location = new System.Drawing.Point(235, 525);
+            this.portTextBox.MaxLength = 5;
+            this.portTextBox.Name = "portTextBox";
+            this.portTextBox.Size = new System.Drawing.Size(300, 49);
+            this.portTextBox.TabIndex = 2;
+            // 
             // LoginWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(764, 588);
+            this.ClientSize = new System.Drawing.Size(764, 708);
+            this.Controls.Add(this.portTextBox);
+            this.Controls.Add(this.ipAddressTextBox);
+            this.Controls.Add(this.portLabel);
+            this.Controls.Add(this.ipAddressLabel);
             this.Controls.Add(this.copyrightLabel);
             this.Controls.Add(this.chatLabel);
             this.Controls.Add(this.loginButton);
@@ -128,6 +174,10 @@
         private System.Windows.Forms.Button loginButton;
         private System.Windows.Forms.Label chatLabel;
         private System.Windows.Forms.Label copyrightLabel;
+        private System.Windows.Forms.Label ipAddressLabel;
+        private System.Windows.Forms.Label portLabel;
+        private System.Windows.Forms.TextBox ipAddressTextBox;
+        private System.Windows.Forms.TextBox portTextBox;
     }
 }
 

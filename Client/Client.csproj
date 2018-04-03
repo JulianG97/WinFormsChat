@@ -60,6 +60,9 @@
     <Compile Include="LoginWindow.Designer.cs">
       <DependentUpon>LoginWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="Network\ConnectionLostEventArgs.cs" />
+    <Compile Include="Network\DataReceivedEventArgs.cs" />
+    <Compile Include="Network\NetworkWatcher.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Protocol\Protocol.cs" />
@@ -96,8 +99,6 @@
   <ItemGroup>
     <Content Include="icon.ico" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Network\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

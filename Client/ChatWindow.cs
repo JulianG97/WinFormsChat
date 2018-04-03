@@ -12,9 +12,15 @@ namespace Client
 {
     public partial class ChatWindow : Form
     {
-        public ChatWindow()
+        private string username;
+        private NetworkWatcher networkWatcher;
+
+        public ChatWindow(string username, NetworkWatcher networkWatcher)
         {
             InitializeComponent();
+
+            this.username = username;
+            this.networkWatcher = networkWatcher;
         }
     }
 }
