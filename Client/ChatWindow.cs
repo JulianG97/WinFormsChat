@@ -21,6 +21,7 @@ namespace Client
             InitializeComponent();
 
             this.username = username;
+            this.usernameLabel.Text = username + ":";
             this.sessionkey = sessionkey;
             this.networkWatcher = networkWatcher;
             this.networkWatcher.ConnectionLost += this.ConnectionLost;
@@ -45,54 +46,111 @@ namespace Client
 
         private void AddUserToOnlineBox(string username)
         {
-            string[] newOnlineUserBox = new string[this.onlineUserRichTextBox.Lines.Length + 1];
-
-            for (int i = 0; i < this.onlineUserRichTextBox.Lines.Length; i++)
+            MethodInvoker methodInvokerDelegate = delegate()
             {
-                newOnlineUserBox[i] = this.onlineUserRichTextBox.Lines[i];
+                string[] newOnlineUserBox = new string[this.onlineUserRichTextBox.Lines.Length + 1];
+
+                for (int i = 0; i < this.onlineUserRichTextBox.Lines.Length; i++)
+                {
+                    newOnlineUserBox[i] = this.onlineUserRichTextBox.Lines[i];
+                }
+
+                newOnlineUserBox[this.onlineUserRichTextBox.Lines.Length] = username;
+
+                this.onlineUserRichTextBox.Lines = newOnlineUserBox;
+            };
+
+            if (this.InvokeRequired)
+            {
+                this.Invoke(methodInvokerDelegate);
             }
-
-            newOnlineUserBox[this.onlineUserRichTextBox.Lines.Length] = username;
-
-            this.onlineUserRichTextBox.Lines = newOnlineUserBox;
+            else
+            {
+                methodInvokerDelegate();
+            }
         }
 
         private void RemoveUserFromOnlineBox(string username)
         {
-            string[] newOnlineUserBox = new string[this.onlineUserRichTextBox.Lines.Length - 1];
-
-            for (int i = 0, j = 0; i < this.onlineUserRichTextBox.Lines.Length; i++, j++)
+            MethodInvoker methodInvokerDelegate = delegate ()
             {
-                if (this.onlineUserRichTextBox.Lines[i] != username)
-                {
-                    newOnlineUserBox[j] = this.onlineUserRichTextBox.Lines[i];
-                }
-                else
-                {
-                    j--;
-                }
-            }
+                string[] newOnlineUserBox = new string[this.onlineUserRichTextBox.Lines.Length - 1];
 
-            this.onlineUserRichTextBox.Lines = newOnlineUserBox;
+                for (int i = 0, j = 0; i < this.onlineUserRichTextBox.Lines.Length; i++, j++)
+                {
+                    if (this.onlineUserRichTextBox.Lines[i] != username)
+                    {
+                        newOnlineUserBox[j] = this.onlineUserRichTextBox.Lines[i];
+                    }
+                    else
+                    {
+                        j--;
+                    }
+                }
+
+                this.onlineUserRichTextBox.Lines = newOnlineUserBox;
+            };
+
+            if (this.InvokeRequired)
+            {
+                this.Invoke(methodInvokerDelegate);
+            }
+            else
+            {
+                methodInvokerDelegate();
+            }
         }
 
         private void AddMessageToChat(string message)
         {
-            string[] newMessageBox = new string[this.messageRichTextBox.Lines.Length + 1];
-
-            for (int i = 0; i < this.messageRichTextBox.Lines.Length; i++)
+            MethodInvoker methodInvokerDelegate = delegate ()
             {
-                newMessageBox[i] = this.messageRichTextBox.Lines[i];
+                string[] newMessageBox = new string[this.messageRichTextBox.Lines.Length + 1];
+
+                for (int i = 0; i < this.messageRichTextBox.Lines.Length; i++)
+                {
+                    newMessageBox[i] = this.messageRichTextBox.Lines[i];
+                }
+
+                newMessageBox[this.messageRichTextBox.Lines.Length] = message;
+
+                this.messageRichTextBox.Lines = newMessageBox;
+            };
+
+            if (this.InvokeRequired)
+            {
+                this.Invoke(methodInvokerDelegate);
             }
-
-            newMessageBox[this.onlineUserRichTextBox.Lines.Length] = message;
-
-            this.messageRichTextBox.Lines = newMessageBox;
+            else
+            {
+                methodInvokerDelegate();
+            }
         }
 
         private void ConnectionLost(object sender, EventArgs args)
         {
 
+        }
+
+        private void SendButton_Click(object sender, EventArgs e)
+        {
+            MethodInvoker methodInvokerDelegate = delegate ()
+            {
+                if (this.sendMessageTextBox.Text.Length >= 1)
+                {
+                    this.networkWatcher.Send(ProtocolCreator.Message(this.sendMessageTextBox.Text, this.sessionkey));
+                    this.sendMessageTextBox.Text = string.Empty;
+                }
+            };
+
+            if (this.InvokeRequired)
+            {
+                this.Invoke(methodInvokerDelegate);
+            }
+            else
+            {
+                methodInvokerDelegate();
+            }
         }
     }
 }
