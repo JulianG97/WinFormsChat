@@ -13,6 +13,7 @@ namespace Client
     public partial class ChatWindow : Form
     {
         private string username;
+        private string sessionkey;
         private NetworkWatcher networkWatcher;
 
         public ChatWindow(string username, NetworkWatcher networkWatcher)
@@ -21,6 +22,33 @@ namespace Client
 
             this.username = username;
             this.networkWatcher = networkWatcher;
+            this.networkWatcher.ConnectionLost += this.ConnectionLost;
+            this.networkWatcher.DataReceived += this.DataReceived;
+        }
+
+        private void DataReceived(object sender, DataReceivedEventArgs args)
+        {
+            if (args.Protocol.Type.SequenceEqual(ProtocolType.AddUser))
+            {
+
+            }
+            else if (args.Protocol.Type.SequenceEqual(ProtocolType.RemoveUser))
+            {
+
+            }
+            else if (args.Protocol.Type.SequenceEqual(ProtocolType.SessionKey))
+            {
+
+            }
+            else if (args.Protocol.Type.SequenceEqual(ProtocolType.NewMessage))
+            {
+
+            }
+        }
+
+        private void ConnectionLost(object sender, ConnectionLostEventArgs args)
+        {
+
         }
     }
 }

@@ -14,6 +14,8 @@ namespace Client
 {
     public partial class LoginWindow : Form
     {
+        private string sessionkey;
+
         public LoginWindow()
         {
             InitializeComponent();
@@ -36,12 +38,31 @@ namespace Client
             else
             {
                 NetworkWatcher networkWatcher = new NetworkWatcher(IPAddress.Parse(this.ipAddressTextBox.Text), int.Parse(this.portTextBox.Text));
+                networkWatcher.ConnectionLost += this.ConnectionLost;
+                networkWatcher.DataReceived += this.DataReceived;
                 networkWatcher.Start();
 
                 if (networkWatcher.Connected == true)
                 {
-                    
+                    this.Close();
+                    ChatWindow chatWindow = new ChatWindow(this.usernameTextBox.Text, networkWatcher);
+                    networkWatcher.ConnectionLost -= this.ConnectionLost;
+                    networkWatcher.DataReceived -= this.DataReceived;
+                    chatWindow.Show();
                 }
+            }
+        }
+
+        private void ConnectionLost(object sender, ConnectionLostEventArgs args)
+        {
+
+        }
+
+        private void DataReceived(object sender, DataReceivedEventArgs args)
+        {
+            if (args.Protocol.Type.SequenceEqual(ProtocolType.SessionKey))
+            {
+                this.sessionkey = Encoding.ASCII.GetString(args.Protocol.Content);
             }
         }
 
