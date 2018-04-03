@@ -11,7 +11,6 @@ namespace Server
     public class NetworkWatcher
     {
         private NetworkStream stream;
-        private TcpClient client;
         private bool isReading;
         private Thread readThread;
 
@@ -20,14 +19,20 @@ namespace Server
 
         public NetworkWatcher(TcpClient client)
         {
-            this.client = client;
+            this.Client = client;
+        }
+
+        public TcpClient Client
+        {
+            get;
+            private set;
         }
 
         public void Start()
         {
             try
             {
-                this.stream = this.client.GetStream();
+                this.stream = this.Client.GetStream();
                 this.readThread = new Thread(this.Read);
                 this.isReading = true;
                 this.readThread.Start();
@@ -44,7 +49,7 @@ namespace Server
             {
                 this.isReading = false;
                 this.stream.Close();
-                this.client.Close();
+                this.Client.Close();
             }
             catch
             {
@@ -91,7 +96,7 @@ namespace Server
         {
             if (this.DataReceived != null)
             {
-                this.DataReceived(this, new DataReceivedEventArgs(data, this.client));
+                this.DataReceived(this, new DataReceivedEventArgs(data, this.Client));
             }
         }
 
@@ -99,7 +104,7 @@ namespace Server
         {
             if (this.ConnectionLost != null)
             {
-                this.ConnectionLost(this, new ConnectionLostEventArgs(this.client));
+                this.ConnectionLost(this, new ConnectionLostEventArgs(this.Client));
             }
         }
 

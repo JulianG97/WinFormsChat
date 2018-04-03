@@ -131,16 +131,30 @@ namespace Server
 
         private void AddLineToLog(string line)
         {
-            string[] newLog = new string[this.logRichTextBox.Lines.Length + 1];
-
-            for (int i = 0; i < this.logRichTextBox.Lines.Length; i++)
+            MethodInvoker methodInvokerDelegate = delegate ()
             {
-                newLog[i] = this.logRichTextBox.Lines[i];
+                string time = DateTime.Now.ToString("[HH:mm]");
+
+                string[] newLog = new string[this.logRichTextBox.Lines.Length + 1];
+
+                for (int i = 0; i < this.logRichTextBox.Lines.Length; i++)
+                {
+                    newLog[i] = this.logRichTextBox.Lines[i];
+                }
+
+                newLog[this.logRichTextBox.Lines.Length] = time + " " + line;
+
+                this.logRichTextBox.Lines = newLog;
+            };
+
+            if (this.InvokeRequired)
+            {
+                this.Invoke(methodInvokerDelegate);
             }
-
-            newLog[this.logRichTextBox.Lines.Length] = line;
-
-            this.logRichTextBox.Lines = newLog;
+            else
+            {
+                methodInvokerDelegate();
+            }
         }
 
         private void HandleNewSession(object data)
@@ -189,11 +203,11 @@ namespace Server
             return false;
         }
 
-        private void CreateNewUser(string username, string sessionkey, TcpClient client)
+        private void CreateNewUser(string username, string sessionkey, NetworkWatcher networkWatcher)
         {
             lock (locker)
             {
-                this.users.Add(new User(username, client, sessionkey));
+                this.users.Add(new User(username, networkWatcher, sessionkey));
             }
         }
 
@@ -201,14 +215,41 @@ namespace Server
         {
             if (args.Protocol.Type.SequenceEqual(ProtocolType.LogIn))
             {
-                if (CheckIfLegalUsername(Encoding.ASCII.GetString(args.Protocol.Content)) == true)
+                if (args.Protocol.Content != null && args.Protocol.Content.Length >= 1)
                 {
-                    Protocol protocol = ProtocolCreator.SessionKey();
-                    this.CreateNewUser(Encoding.ASCII.GetString(args.Protocol.Content), Encoding.ASCII.GetString(protocol.Content), args.Client);
+                    string username = Encoding.ASCII.GetString(args.Protocol.Content);
 
-                    NetworkWatcher networkWatcher = (NetworkWatcher)sender;
-                    networkWatcher.Send(protocol);
-                }
+                    if (CheckIfLegalUsername(username) == true)
+                    {
+                        NetworkWatcher networkWatcher = (NetworkWatcher)sender;
+
+                        Protocol protocol = ProtocolCreator.SessionKey();
+                        this.CreateNewUser(username, Encoding.ASCII.GetString(protocol.Content), networkWatcher);
+
+                        networkWatcher.Send(protocol);
+
+                        lock (locker)
+                        {
+                            // Sends the new user all online users
+                            foreach (User user in this.users)
+                            {
+                                if (user.Username != username)
+                                {
+                                    networkWatcher.Send(ProtocolCreator.AddUser(user.Username));
+                                }
+                            }
+
+                            // Sends all users the new user
+                            foreach (User user in this.users)
+                            {
+                                user.NetworkWatcher.Send(ProtocolCreator.AddUser(username));
+                                user.NetworkWatcher.Send(ProtocolCreator.NewMessage("SERVER: " + username + " logged in!"));
+                            }
+                        }
+
+                        this.AddLineToLog(username + " (" + ((IPEndPoint)networkWatcher.Client.Client.RemoteEndPoint).Address.ToString() + ")" + " logged in!");
+                    }
+                }                
             }
             else if (args.Protocol.Type.SequenceEqual(ProtocolType.LogOut))
             {
@@ -216,7 +257,17 @@ namespace Server
             }
             else if (args.Protocol.Type.SequenceEqual(ProtocolType.Message))
             {
+                if (args.Protocol.Content != null && args.Protocol.Content.Length >= 1)
+                {
+                    string messageAndSessionKey = Encoding.ASCII.GetString(args.Protocol.Content);
 
+                    string[] messageAndSessionKeyArray = messageAndSessionKey.Split('-');
+
+                    if (messageAndSessionKeyArray.Length == 2)
+                    {
+
+                    }
+                }
             }
         }
 

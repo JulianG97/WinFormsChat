@@ -37,7 +37,9 @@ namespace Server
 
         public static Protocol NewMessage(string message)
         {
-            Protocol protocol = new Protocol(ProtocolType.NewMessage, Encoding.ASCII.GetBytes(message));
+            string time = DateTime.Now.ToString("[HH:mm]");
+
+            Protocol protocol = new Protocol(ProtocolType.NewMessage, Encoding.ASCII.GetBytes(time + " " + message));
             return protocol;
         }
 

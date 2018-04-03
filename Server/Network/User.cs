@@ -10,10 +10,10 @@ namespace Server
 {
     public class User
     {
-        public User(string username, TcpClient client, string sessionkey)
+        public User(string username, NetworkWatcher networkWatcher, string sessionkey)
         {
             this.Username = username;
-            this.Client = client;
+            this.NetworkWatcher = networkWatcher;
             this.SessionKey = sessionkey;
         }
 
@@ -23,7 +23,7 @@ namespace Server
             private set;
         }
 
-        public TcpClient Client
+        public NetworkWatcher NetworkWatcher
         {
             get;
             private set;
