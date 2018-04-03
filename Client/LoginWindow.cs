@@ -47,7 +47,7 @@ namespace Client
                 {
                     this.networkWatcher.Send(ProtocolCreator.LogIn(this.usernameTextBox.Text));
 
-                    if (this.WaitForSessionKey(5000) == true)
+                    if (this.WaitForSessionKey(1000) == true)
                     {
                         this.networkWatcher.ConnectionLost -= this.ConnectionLost;
                         this.networkWatcher.DataReceived -= this.DataReceived;

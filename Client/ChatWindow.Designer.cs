@@ -37,6 +37,7 @@ namespace Client
             this.onlineUsersLabel = new System.Windows.Forms.Label();
             this.sendMessageTextBox = new System.Windows.Forms.TextBox();
             this.sendButton = new System.Windows.Forms.Button();
+            this.usernameLabel = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // messageRichTextBox
@@ -87,7 +88,7 @@ namespace Client
             // sendMessageTextBox
             // 
             this.sendMessageTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.sendMessageTextBox.Location = new System.Drawing.Point(26, 612);
+            this.sendMessageTextBox.Location = new System.Drawing.Point(26, 654);
             this.sendMessageTextBox.Name = "sendMessageTextBox";
             this.sendMessageTextBox.Size = new System.Drawing.Size(852, 44);
             this.sendMessageTextBox.TabIndex = 4;
@@ -95,18 +96,30 @@ namespace Client
             // sendButton
             // 
             this.sendButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.sendButton.Location = new System.Drawing.Point(907, 609);
+            this.sendButton.Location = new System.Drawing.Point(907, 652);
             this.sendButton.Name = "sendButton";
             this.sendButton.Size = new System.Drawing.Size(239, 54);
             this.sendButton.TabIndex = 5;
             this.sendButton.Text = "Send";
             this.sendButton.UseVisualStyleBackColor = true;
+            this.sendButton.Click += new System.EventHandler(this.SendButton_Click);
+            // 
+            // usernameLabel
+            // 
+            this.usernameLabel.AutoSize = true;
+            this.usernameLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.875F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.usernameLabel.Location = new System.Drawing.Point(19, 607);
+            this.usernameLabel.Name = "usernameLabel";
+            this.usernameLabel.Size = new System.Drawing.Size(200, 42);
+            this.usernameLabel.TabIndex = 6;
+            this.usernameLabel.Text = "Username:";
             // 
             // ChatWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1158, 678);
+            this.ClientSize = new System.Drawing.Size(1158, 724);
+            this.Controls.Add(this.usernameLabel);
             this.Controls.Add(this.sendButton);
             this.Controls.Add(this.sendMessageTextBox);
             this.Controls.Add(this.onlineUsersLabel);
@@ -131,5 +144,6 @@ namespace Client
         private System.Windows.Forms.Label onlineUsersLabel;
         private System.Windows.Forms.TextBox sendMessageTextBox;
         private System.Windows.Forms.Button sendButton;
+        private System.Windows.Forms.Label usernameLabel;
     }
 }
