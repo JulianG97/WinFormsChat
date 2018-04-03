@@ -51,13 +51,19 @@ namespace Client
                     {
                         this.networkWatcher.ConnectionLost -= this.ConnectionLost;
                         this.networkWatcher.DataReceived -= this.DataReceived;
-                        this.Close();
+                        this.Hide();
 
                         ChatWindow chatWindow = new ChatWindow(this.usernameTextBox.Text, this.sessionkey, this.networkWatcher);
+                        chatWindow.FormClosed += this.ChatWindowClosed;
                         chatWindow.Show();
                     }
                 }
             }
+        }
+
+        private void ChatWindowClosed(object sender, FormClosedEventArgs args)
+        {
+            this.Close();
         }
 
         private bool WaitForSessionKey(int milliseconds)
