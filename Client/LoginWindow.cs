@@ -43,11 +43,11 @@ namespace Client
                 this.networkWatcher.DataReceived += this.DataReceived;
                 this.networkWatcher.Start();
 
-                this.networkWatcher.Send(ProtocolCreator.LogIn(this.usernameTextBox.Text));
-
-                if (this.WaitForSessionKey(5000) == true)
+                if (this.networkWatcher.Connected == true)
                 {
-                    if (this.networkWatcher.Connected == true)
+                    this.networkWatcher.Send(ProtocolCreator.LogIn(this.usernameTextBox.Text));
+
+                    if (this.WaitForSessionKey(5000) == true)
                     {
                         this.networkWatcher.ConnectionLost -= this.ConnectionLost;
                         this.networkWatcher.DataReceived -= this.DataReceived;
@@ -62,7 +62,7 @@ namespace Client
 
         private bool WaitForSessionKey(int milliseconds)
         {
-            for (int i = 0; i < milliseconds/10; i++)
+            for (int i = 0; i < milliseconds / 10; i++)
             {
                 if (this.sessionkey != null)
                 {
