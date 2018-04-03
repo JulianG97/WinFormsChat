@@ -60,7 +60,6 @@
     <Compile Include="LoginWindow.Designer.cs">
       <DependentUpon>LoginWindow.cs</DependentUpon>
     </Compile>
-    <Compile Include="Network\ConnectionLostEventArgs.cs" />
     <Compile Include="Network\DataReceivedEventArgs.cs" />
     <Compile Include="Network\NetworkWatcher.cs" />
     <Compile Include="Program.cs" />

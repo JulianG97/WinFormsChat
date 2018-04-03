@@ -17,7 +17,7 @@ namespace Client
         private Thread readThread;
 
         public event EventHandler<DataReceivedEventArgs> DataReceived;
-        public event EventHandler<ConnectionLostEventArgs> ConnectionLost;
+        public event EventHandler<EventArgs> ConnectionLost;
 
         public NetworkWatcher(IPAddress ip, int port)
         {
@@ -116,7 +116,7 @@ namespace Client
         {
             if (this.ConnectionLost != null)
             {
-                this.ConnectionLost(this, new ConnectionLostEventArgs(this.client));
+                this.ConnectionLost(this, new EventArgs());
             }
         }
 

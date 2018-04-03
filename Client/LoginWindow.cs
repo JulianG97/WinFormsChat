@@ -5,7 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 using System.Windows.Forms;
 using System.Net;
 using System.Net.Sockets;
@@ -15,6 +15,7 @@ namespace Client
     public partial class LoginWindow : Form
     {
         private string sessionkey;
+        private NetworkWatcher networkWatcher;
 
         public LoginWindow()
         {
@@ -37,23 +38,52 @@ namespace Client
             }
             else
             {
-                NetworkWatcher networkWatcher = new NetworkWatcher(IPAddress.Parse(this.ipAddressTextBox.Text), int.Parse(this.portTextBox.Text));
-                networkWatcher.ConnectionLost += this.ConnectionLost;
-                networkWatcher.DataReceived += this.DataReceived;
-                networkWatcher.Start();
+                this.networkWatcher = new NetworkWatcher(IPAddress.Parse(this.ipAddressTextBox.Text), int.Parse(this.portTextBox.Text));
+                this.networkWatcher.ConnectionLost += this.ConnectionLost;
+                this.networkWatcher.DataReceived += this.DataReceived;
+                this.networkWatcher.Start();
 
-                if (networkWatcher.Connected == true)
+                this.networkWatcher.Send(ProtocolCreator.LogIn(this.usernameTextBox.Text));
+
+                if (this.WaitForSessionKey(5000) == true)
                 {
-                    this.Close();
-                    ChatWindow chatWindow = new ChatWindow(this.usernameTextBox.Text, networkWatcher);
-                    networkWatcher.ConnectionLost -= this.ConnectionLost;
-                    networkWatcher.DataReceived -= this.DataReceived;
-                    chatWindow.Show();
+                    if (this.networkWatcher.Connected == true)
+                    {
+                        this.networkWatcher.ConnectionLost -= this.ConnectionLost;
+                        this.networkWatcher.DataReceived -= this.DataReceived;
+                        this.Close();
+
+                        ChatWindow chatWindow = new ChatWindow(this.usernameTextBox.Text, this.sessionkey, this.networkWatcher);
+                        chatWindow.Show();
+                    }
                 }
             }
         }
 
-        private void ConnectionLost(object sender, ConnectionLostEventArgs args)
+        private bool WaitForSessionKey(int milliseconds)
+        {
+            for (int i = 0; i < milliseconds/10; i++)
+            {
+                if (this.sessionkey != null)
+                {
+                    break;
+                }
+
+                Thread.Sleep(10);
+            }
+
+            if (this.sessionkey == null)
+            {
+                this.ConnectionLost(this, new EventArgs());
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+        private void ConnectionLost(object sender, EventArgs args)
         {
 
         }
