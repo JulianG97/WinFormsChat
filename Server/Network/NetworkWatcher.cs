@@ -13,6 +13,8 @@ namespace Server
         private NetworkStream stream;
         private bool isReading;
         private Thread readThread;
+        private Thread isAliveThread;
+        private bool isAlive;
 
         public event EventHandler<DataReceivedEventArgs> DataReceived;
         public event EventHandler<ConnectionLostEventArgs> ConnectionLost;
@@ -36,6 +38,9 @@ namespace Server
                 this.readThread = new Thread(this.Read);
                 this.isReading = true;
                 this.readThread.Start();
+
+                this.isAliveThread = new Thread(this.IsAliveWorker);
+                this.isAliveThread.Start();
             }
             catch
             {
@@ -54,6 +59,25 @@ namespace Server
             catch
             {
 
+            }
+        }
+
+        private void IsAliveWorker()
+        {
+            while (this.isReading == true)
+            {
+                this.Send(ProtocolCreator.IsAlive());
+
+                Thread.Sleep(2000);
+
+                if (this.isAlive == false)
+                {
+                    this.FireOnConnectionLost();
+                }
+                else
+                {
+                    this.isAlive = false;
+                }
             }
         }
 
@@ -86,7 +110,14 @@ namespace Server
                 {
                     if (receivedBytes[0] == 67 && receivedBytes[1] == 72 && receivedBytes[2] == 65 && receivedBytes[3] == 84)
                     {
-                        this.FireOnDataReceived(receivedBytes.ToArray());
+                        if (receivedBytes[4] == 73 && receivedBytes[5] == 65)
+                        {
+                            this.isAlive = true;
+                        }
+                        else
+                        {
+                            this.FireOnDataReceived(receivedBytes.ToArray());
+                        }
                     }
                 }
             }

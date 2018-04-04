@@ -47,7 +47,7 @@ namespace Server
                         this.isRunning = true;
                         locker = new object();
                         this.portTextBox.Enabled = false;
-                        //this.ipAddressPubTextBox.Text = this.GetExternalIPAddress().ToString();
+                        this.ipAddressPubTextBox.Text = this.GetExternalIPAddress().ToString();
                         this.ipAddressPrivTextBox.Text = this.GetInternalIPAddress().ToString();
 
                         this.users = new List<User>();
@@ -399,7 +399,27 @@ namespace Server
 
         private void ConnectionLost(object sender, ConnectionLostEventArgs args)
         {
+            lock (locker)
+            {
+                try
+                {
+                    foreach (User user in this.users)
+                    {
+                        if (((IPEndPoint)user.NetworkWatcher.Client.Client.RemoteEndPoint).Address == ((IPEndPoint)args.Client.Client.RemoteEndPoint).Address)
+                        {
+                            if (((IPEndPoint)user.NetworkWatcher.Client.Client.RemoteEndPoint).Port == ((IPEndPoint)args.Client.Client.RemoteEndPoint).Port)
+                            {
+                                this.RemoveUser(user.Username, user.SessionKey);
+                                break;
+                            }
+                        }
+                    }
+                }
+                catch
+                {
 
+                }
+            }
         }
     }
 }
