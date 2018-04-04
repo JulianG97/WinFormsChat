@@ -156,7 +156,23 @@ namespace Client
 
         private void ConnectionLost(object sender, EventArgs args)
         {
+            this.FormClosing -= this.CleanClosing;
+            this.networkWatcher.Stop();
+            MessageBox.Show("You lost the connection to the server! Press \"OK\" to close the window.", "Chat", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
 
+            MethodInvoker methodInvokerDelegate = delegate ()
+            {
+                this.Close();
+            };
+
+            if (this.InvokeRequired)
+            {
+                this.Invoke(methodInvokerDelegate);
+            }
+            else
+            {
+                methodInvokerDelegate();
+            }
         }
 
         private void SendButton_Click(object sender, EventArgs e)
