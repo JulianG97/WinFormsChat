@@ -49,7 +49,6 @@ namespace Client
             {
                 this.networkWatcher.Send(ProtocolCreator.LogOut(this.username, this.sessionkey));
                 this.networkWatcher.Stop();
-                this.Close();
             }
         }
 
