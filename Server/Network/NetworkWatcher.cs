@@ -69,7 +69,7 @@ namespace Server
             {
                 this.Send(ProtocolCreator.IsAlive());
 
-                Thread.Sleep(3000);
+                Thread.Sleep(2000);
 
                 if (this.isAlive == false)
                 {
