@@ -167,6 +167,7 @@ namespace Client
                 {
                     this.networkWatcher.Send(ProtocolCreator.Message(this.username, this.sendMessageTextBox.Text, this.sessionkey));
                     this.sendMessageTextBox.Text = string.Empty;
+                    this.sendMessageTextBox.Focus();
                 }
             };
 
