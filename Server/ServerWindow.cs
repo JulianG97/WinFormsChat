@@ -47,7 +47,7 @@ namespace Server
                         this.isRunning = true;
                         locker = new object();
                         this.portTextBox.Enabled = false;
-                        this.ipAddressPubTextBox.Text = this.GetExternalIPAddress().ToString();
+                        //this.ipAddressPubTextBox.Text = this.GetExternalIPAddress().ToString();
                         this.ipAddressPrivTextBox.Text = this.GetInternalIPAddress().ToString();
 
                         this.users = new List<User>();
@@ -80,7 +80,19 @@ namespace Server
 
         private void CleanClosing(object sender, FormClosingEventArgs args)
         {
+            if (this.isRunning == true)
+            {
+                DialogResult askIfClosing = MessageBox.Show("The server is running. Do you really want to exit?", "Chat - Server", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
 
+                if (askIfClosing == DialogResult.No)
+                {
+                    args.Cancel = true;
+                }
+                else
+                {
+                    this.StopButton_Click(this, new EventArgs());
+                }
+            }
         }
 
         private IPAddress GetExternalIPAddress()
@@ -168,6 +180,9 @@ namespace Server
                 newLog[this.logRichTextBox.Lines.Length] = time + " " + line;
 
                 this.logRichTextBox.Lines = newLog;
+
+                this.logRichTextBox.SelectionStart = this.logRichTextBox.Text.Length;
+                this.logRichTextBox.ScrollToCaret();
             };
 
             if (this.InvokeRequired)
@@ -242,78 +257,140 @@ namespace Server
                 if (args.Protocol.Content != null && args.Protocol.Content.Length >= 1)
                 {
                     string username = Encoding.ASCII.GetString(args.Protocol.Content);
-
-                    if (CheckIfLegalUsername(username) == true)
-                    {
-                        NetworkWatcher networkWatcher = (NetworkWatcher)sender;
-
-                        Protocol protocol = ProtocolCreator.SessionKey();
-                        this.CreateNewUser(username, Encoding.ASCII.GetString(protocol.Content), networkWatcher);
-
-                        networkWatcher.Send(protocol);
-
-                        Thread.Sleep(100);
-
-                        lock (locker)
-                        {
-                            // Sends the new user all online users
-                            foreach (User user in this.users)
-                            {
-                                if (user.Username != username)
-                                {
-                                    networkWatcher.Send(ProtocolCreator.AddUser(user.Username));
-                                }
-                            }
-
-                            // Sends all users the new user
-                            foreach (User user in this.users)
-                            {
-                                user.NetworkWatcher.Send(ProtocolCreator.AddUser(username));
-                                user.NetworkWatcher.Send(ProtocolCreator.NewMessage("SERVER: " + username + " logged in!"));
-                            }
-                        }
-
-                        this.AddLineToLog(username + " (" + ((IPEndPoint)networkWatcher.Client.Client.RemoteEndPoint).Address.ToString() + ")" + " logged in!");
-                    }
+                    this.AddUser(username, (NetworkWatcher)sender);
                 }                
             }
             else if (args.Protocol.Type.SequenceEqual(ProtocolType.LogOut))
             {
+                if (args.Protocol.Content != null && args.Protocol.Content.Length >= 1)
+                {
+                    string usernameAndSessionKey = Encoding.ASCII.GetString(args.Protocol.Content);
 
+                    string[] usernameAndSessionKeyArray = usernameAndSessionKey.Split('-');
+
+                    if (usernameAndSessionKeyArray.Length == 2)
+                    {
+                        this.RemoveUser(usernameAndSessionKeyArray[0], usernameAndSessionKeyArray[1]);
+                    }
+                }
             }
             else if (args.Protocol.Type.SequenceEqual(ProtocolType.Message))
             {
                 if (args.Protocol.Content != null && args.Protocol.Content.Length >= 1)
                 {
                     string message = Encoding.ASCII.GetString(args.Protocol.Content);
+                    this.ForwardMessageToAllUsers(message);
+                }
+            }
+        }
 
-                    string[] messageArray = message.Split('-');
+        private void RemoveUser(string username, string sessionkey)
+        {
+            // Verifys session key of the logout request
+            bool legitSessionKey = false;
 
-                    if (messageArray.Length == 3)
+            lock (locker)
+            {
+                foreach (User user in this.users)
+                {
+                    if (user.Username == username && user.SessionKey == sessionkey)
                     {
-                        bool verifiedMessage = false;
+                        legitSessionKey = true;
+                        break;
+                    }
+                }
+            }
 
-                        lock (locker)
+            if (legitSessionKey == true)
+            {
+                // Remove user from user list on server
+                lock (locker)
+                {
+                    foreach (User user in this.users)
+                    {
+                        if (user.Username == username)
                         {
-                            foreach (User user in this.users)
-                            {
-                                if (user.Username == messageArray[0] && user.SessionKey == messageArray[2])
-                                {
-                                    verifiedMessage = true;
-                                    break;
-                                }
-                            }
+                            this.AddLineToLog(username + " (" + ((IPEndPoint)user.NetworkWatcher.Client.Client.RemoteEndPoint).Address.ToString() + ")" + " logged out!");
+                            user.NetworkWatcher.Stop();
+                            this.users.Remove(user);
+                            break;
                         }
+                    }
+                }
 
-                        if (verifiedMessage == true)
+                // Sends all users the user who logged out
+                lock (locker)
+                {
+                    foreach (User user in this.users)
+                    {
+                        user.NetworkWatcher.Send(ProtocolCreator.RemoveUser(username));
+                        user.NetworkWatcher.Send(ProtocolCreator.NewMessage("SERVER: " + username + " logged out!"));
+                    }
+                }
+            }
+        }
+
+        private void AddUser(string username, NetworkWatcher networkWatcher)
+        {
+            if (CheckIfLegalUsername(username) == true)
+            {
+                Protocol protocol = ProtocolCreator.SessionKey();
+                this.CreateNewUser(username, Encoding.ASCII.GetString(protocol.Content), networkWatcher);
+
+                networkWatcher.Send(protocol);
+
+                Thread.Sleep(100);
+
+                lock (locker)
+                {
+                    // Sends the new user all online users
+                    foreach (User user in this.users)
+                    {
+                        if (user.Username != username)
                         {
-                            lock (locker)
-                            {
-                                foreach (User user in this.users)
-                                {
-                                    user.NetworkWatcher.Send(ProtocolCreator.NewMessage(messageArray[0] + ": " + messageArray[1]));
-                                }
-                            }
+                            networkWatcher.Send(ProtocolCreator.AddUser(user.Username));
+                        }
+                    }
+
+                    // Sends all users the new user
+                    foreach (User user in this.users)
+                    {
+                        user.NetworkWatcher.Send(ProtocolCreator.AddUser(username));
+                        user.NetworkWatcher.Send(ProtocolCreator.NewMessage("SERVER: " + username + " logged in!"));
+                    }
+                }
+
+                this.AddLineToLog(username + " (" + ((IPEndPoint)networkWatcher.Client.Client.RemoteEndPoint).Address.ToString() + ")" + " logged in!");
+            }
+        }
+
+        private void ForwardMessageToAllUsers(string message)
+        {
+            string[] messageArray = message.Split('-');
+
+            if (messageArray.Length == 3)
+            {
+                bool verifiedMessage = false;
+
+                lock (locker)
+                {
+                    foreach (User user in this.users)
+                    {
+                        if (user.Username == messageArray[0] && user.SessionKey == messageArray[2])
+                        {
+                            verifiedMessage = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (verifiedMessage == true)
+                {
+                    lock (locker)
+                    {
+                        foreach (User user in this.users)
+                        {
+                            user.NetworkWatcher.Send(ProtocolCreator.NewMessage(messageArray[0] + ": " + messageArray[1]));
                         }
                     }
                 }
