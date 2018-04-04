@@ -50,6 +50,7 @@ namespace Client
                 this.Connected = true;
 
                 this.isAliveThread = new Thread(this.IsAliveWorker);
+                this.isAliveThread.Priority = ThreadPriority.Highest;
                 this.isAliveThread.Start();
             }
             catch
