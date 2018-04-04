@@ -19,6 +19,7 @@ namespace Client
         public ChatWindow(string username, string sessionkey, NetworkWatcher networkWatcher)
         {
             InitializeComponent();
+            this.FormClosing += this.CleanClosing;
 
             this.username = username;
             this.usernameLabel.Text = username + ":";
@@ -26,6 +27,30 @@ namespace Client
             this.networkWatcher = networkWatcher;
             this.networkWatcher.ConnectionLost += this.ConnectionLost;
             this.networkWatcher.DataReceived += this.DataReceived;
+        }
+
+        private void EnterKeyPressed(object sender, KeyEventArgs args)
+        {
+            if (args.KeyCode == Keys.Enter)
+            {
+                this.SendButton_Click(this, new EventArgs());
+            }
+        }
+
+        private void CleanClosing(object sender, FormClosingEventArgs args)
+        {
+            DialogResult askIfLogout = MessageBox.Show("Do you want to logout?", "Chat", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
+
+            if (askIfLogout == DialogResult.No)
+            {
+                args.Cancel = true;
+            }
+            else if (askIfLogout == DialogResult.Yes)
+            {
+                this.networkWatcher.Send(ProtocolCreator.LogOut(this.username, this.sessionkey));
+                this.networkWatcher.Stop();
+                this.Close();
+            }
         }
 
         private void DataReceived(object sender, DataReceivedEventArgs args)
@@ -46,7 +71,7 @@ namespace Client
 
         private void AddUserToOnlineBox(string username)
         {
-            MethodInvoker methodInvokerDelegate = delegate()
+            MethodInvoker methodInvokerDelegate = delegate ()
             {
                 string[] newOnlineUserBox = new string[this.onlineUserRichTextBox.Lines.Length + 1];
 
@@ -116,11 +141,8 @@ namespace Client
 
                 this.messageRichTextBox.Lines = newMessageBox;
 
-                if (this.messageRichTextBox.Lines.Length > 1)
-                {
-                    this.messageRichTextBox.SelectionStart = this.messageRichTextBox.Text.Length - this.messageRichTextBox.Lines[this.messageRichTextBox.Lines.Length - 1].Length - 1;
-                    this.messageRichTextBox.ScrollToCaret();
-                }
+                this.messageRichTextBox.SelectionStart = this.messageRichTextBox.Text.Length;
+                this.messageRichTextBox.ScrollToCaret();
             };
 
             if (this.InvokeRequired)

@@ -48,7 +48,7 @@ namespace Client
             this.messageRichTextBox.Location = new System.Drawing.Point(26, 52);
             this.messageRichTextBox.Name = "messageRichTextBox";
             this.messageRichTextBox.ReadOnly = true;
-            this.messageRichTextBox.Size = new System.Drawing.Size(852, 540);
+            this.messageRichTextBox.Size = new System.Drawing.Size(852, 528);
             this.messageRichTextBox.TabIndex = 0;
             this.messageRichTextBox.TabStop = false;
             this.messageRichTextBox.Text = "";
@@ -60,7 +60,7 @@ namespace Client
             this.onlineUserRichTextBox.Location = new System.Drawing.Point(907, 52);
             this.onlineUserRichTextBox.Name = "onlineUserRichTextBox";
             this.onlineUserRichTextBox.ReadOnly = true;
-            this.onlineUserRichTextBox.Size = new System.Drawing.Size(227, 540);
+            this.onlineUserRichTextBox.Size = new System.Drawing.Size(227, 528);
             this.onlineUserRichTextBox.TabIndex = 1;
             this.onlineUserRichTextBox.TabStop = false;
             this.onlineUserRichTextBox.Text = "";
@@ -88,15 +88,16 @@ namespace Client
             // sendMessageTextBox
             // 
             this.sendMessageTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.sendMessageTextBox.Location = new System.Drawing.Point(26, 654);
+            this.sendMessageTextBox.Location = new System.Drawing.Point(26, 635);
             this.sendMessageTextBox.Name = "sendMessageTextBox";
             this.sendMessageTextBox.Size = new System.Drawing.Size(852, 44);
             this.sendMessageTextBox.TabIndex = 4;
+            this.sendMessageTextBox.KeyDown += this.EnterKeyPressed;
             // 
             // sendButton
             // 
             this.sendButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.sendButton.Location = new System.Drawing.Point(907, 652);
+            this.sendButton.Location = new System.Drawing.Point(907, 633);
             this.sendButton.Name = "sendButton";
             this.sendButton.Size = new System.Drawing.Size(239, 54);
             this.sendButton.TabIndex = 5;
@@ -108,7 +109,7 @@ namespace Client
             // 
             this.usernameLabel.AutoSize = true;
             this.usernameLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.875F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.usernameLabel.Location = new System.Drawing.Point(19, 607);
+            this.usernameLabel.Location = new System.Drawing.Point(19, 588);
             this.usernameLabel.Name = "usernameLabel";
             this.usernameLabel.Size = new System.Drawing.Size(200, 42);
             this.usernameLabel.TabIndex = 6;
@@ -118,7 +119,7 @@ namespace Client
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1158, 724);
+            this.ClientSize = new System.Drawing.Size(1158, 700);
             this.Controls.Add(this.usernameLabel);
             this.Controls.Add(this.sendButton);
             this.Controls.Add(this.sendMessageTextBox);
