@@ -92,7 +92,6 @@ namespace Client
             this.sendMessageTextBox.Name = "sendMessageTextBox";
             this.sendMessageTextBox.Size = new System.Drawing.Size(852, 44);
             this.sendMessageTextBox.TabIndex = 4;
-            this.sendMessageTextBox.KeyDown += this.EnterKeyPressed;
             // 
             // sendButton
             // 
@@ -117,6 +116,7 @@ namespace Client
             // 
             // ChatWindow
             // 
+            this.AcceptButton = this.sendButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1158, 700);

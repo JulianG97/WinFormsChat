@@ -29,14 +29,6 @@ namespace Client
             this.networkWatcher.DataReceived += this.DataReceived;
         }
 
-        private void EnterKeyPressed(object sender, KeyEventArgs args)
-        {
-            if (args.KeyCode == Keys.Enter)
-            {
-                this.SendButton_Click(this, new EventArgs());
-            }
-        }
-
         private void CleanClosing(object sender, FormClosingEventArgs args)
         {
             DialogResult askIfLogout = MessageBox.Show("Do you want to logout?", "Chat", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
