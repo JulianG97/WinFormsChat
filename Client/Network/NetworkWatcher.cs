@@ -16,7 +16,6 @@ namespace Client
         private bool isReading;
         private Thread readThread;
         private Thread isAliveThread;
-        private bool isAlive;
 
         public event EventHandler<DataReceivedEventArgs> DataReceived;
         public event EventHandler<EventArgs> ConnectionLost;
@@ -66,15 +65,6 @@ namespace Client
                 this.Send(ProtocolCreator.IsAlive());
 
                 Thread.Sleep(2000);
-
-                if (this.isAlive == false)
-                {
-                    this.FireOnConnectionLost();
-                }
-                else
-                {
-                    this.isAlive = false;
-                }
             }
         }
 
@@ -125,12 +115,11 @@ namespace Client
                     {
                         if (receivedBytes[4] == 73 && receivedBytes[5] == 65)
                         {
-                            this.isAlive = true;
+                            continue;
                         }
-                        else
-                        {
-                            this.FireOnDataReceived(receivedBytes.ToArray());
-                        }
+
+                        this.FireOnDataReceived(receivedBytes.ToArray());
+
                     }
                 }
             }
