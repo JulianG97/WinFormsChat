@@ -81,7 +81,7 @@ namespace Client
             }
         }
 
-        /*private void Read()
+        private void Read()
         {
             while (this.isReading == true)
             {
@@ -110,13 +110,12 @@ namespace Client
                         }
 
                         this.FireOnDataReceived(receivedBytes.ToArray());
-
                     }
                 }
             }
-        }*/
+        }
 
-        private void Read()
+        /*private void Read()
         {
             while (this.isReading == true)
             {
@@ -129,6 +128,8 @@ namespace Client
 
                     receivedBytes.Add(buffer[0]);
                 }
+
+                string test = Encoding.ASCII.GetString(receivedBytes.ToArray());
 
                 int offset = 0;
 
@@ -161,7 +162,7 @@ namespace Client
                     }
                 }
             }
-        }
+        }*/
 
         protected virtual void FireOnDataReceived(byte[] data)
         {

@@ -69,7 +69,7 @@ namespace Server
             }
         }
 
-        private void Read()
+        /*private void Read()
         {
             while (this.isReading == true)
             {
@@ -111,6 +111,40 @@ namespace Server
 
                             this.FireOnDataReceived(protocolBytes.ToArray());
                         }
+                    }
+                }
+            }
+        }*/
+
+        private void Read()
+        {
+            while (this.isReading == true)
+            {
+                List<byte> receivedBytes = new List<byte>();
+                byte[] buffer = new byte[1];
+
+                while (this.stream.DataAvailable == true)
+                {
+                    this.stream.Read(buffer, 0, 1);
+
+                    if (buffer[0] == 127)
+                    {
+                        break;
+                    }
+
+                    receivedBytes.Add(buffer[0]);
+                }
+
+                if (receivedBytes.Count >= 6)
+                {
+                    if (receivedBytes[0] == 67 && receivedBytes[1] == 72 && receivedBytes[2] == 65 && receivedBytes[3] == 84)
+                    {
+                        if (receivedBytes[4] == 73 && receivedBytes[5] == 65)
+                        {
+                            continue;
+                        }
+
+                        this.FireOnDataReceived(receivedBytes.ToArray());
                     }
                 }
             }
