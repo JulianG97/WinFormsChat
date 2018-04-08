@@ -227,13 +227,20 @@ namespace Server
             {
                 if (username.Length >= 3 && username.Length <= 10 && username != "SERVER")
                 {
-                    foreach (User user in this.users)
+                    for (int i = 0; i < this.users.Count; i++)
+                    {
+                        if (this.users[i].Username == username)
+                        {
+                            return false;
+                        }
+                    }
+                    /*foreach (User user in this.users)
                     {
                         if (user.Username == username)
                         {
                             return false;
                         }
-                    }
+                    }*/
 
                     return true;
                 }
@@ -291,19 +298,38 @@ namespace Server
                 // Verifys session key of the logout request
                 bool legitSessionKey = false;
 
-                foreach (User user in this.users)
+                for (int i = 0; i < this.users.Count; i++)
                 {
-                    if (user.Username == username && user.SessionKey == sessionkey)
+                    if (this.users[i].Username == username && this.users[i].SessionKey == sessionkey)
                     {
                         legitSessionKey = true;
                         break;
                     }
                 }
 
+                /*foreach (User user in this.users)
+                {
+                    if (user.Username == username && user.SessionKey == sessionkey)
+                    {
+                        legitSessionKey = true;
+                        break;
+                    }
+                }*/
+
                 if (legitSessionKey == true)
                 {
+                    for (int i = 0; i < this.users.Count; i++)
+                    {
+                        if (this.users[i].Username == username)
+                        {
+                            this.AddLineToLog(username + " (" + ((IPEndPoint)this.users[i].NetworkWatcher.Client.Client.RemoteEndPoint).Address.ToString() + ")" + " logged out!");
+                            this.users[i].NetworkWatcher.Stop();
+                            this.users.Remove(this.users[i]);
+                            break;
+                        }
+                    }
                     // Remove user from user list on server
-                    foreach (User user in this.users)
+                    /*foreach (User user in this.users)
                     {
                         if (user.Username == username)
                         {
@@ -312,7 +338,7 @@ namespace Server
                             this.users.Remove(user);
                             break;
                         }
-                    }
+                    }*/
                 }
 
                 // Sends all users the user who logged out
@@ -335,22 +361,39 @@ namespace Server
 
                     networkWatcher.Send(protocol);
 
-                    Thread.Sleep(100);
+                    //Thread.Sleep(100);
 
                     // Sends the new user all online users
-                    foreach (User user in this.users)
+
+                    for (int i = 0; i < this.users.Count; i++)
+                    {
+                        if (this.users[i].Username != username)
+                        {
+                            networkWatcher.Send(ProtocolCreator.AddUser(this.users[i].Username));
+                        }
+                    }
+
+                    //Thread.Sleep(100);
+
+                    /*foreach (User user in this.users)
                     {
                         if (user.Username != username)
                         {
                             networkWatcher.Send(ProtocolCreator.AddUser(user.Username));
                         }
-                    }
+                    }*/
 
                     // Sends all users the new user
-                    foreach (User user in this.users)
+                    /*foreach (User user in this.users)
                     {
                         user.NetworkWatcher.Send(ProtocolCreator.AddUser(username));
                         user.NetworkWatcher.Send(ProtocolCreator.NewMessage("SERVER: " + username + " logged in!"));
+                    }*/
+
+                    for (int i = 0; i < this.users.Count; i++)
+                    {
+                        this.users[i].NetworkWatcher.Send(ProtocolCreator.AddUser(username));
+                        this.users[i].NetworkWatcher.Send(ProtocolCreator.NewMessage("SERVER: " + username + " logged in!"));
                     }
 
                     this.AddLineToLog(username + " (" + ((IPEndPoint)networkWatcher.Client.Client.RemoteEndPoint).Address.ToString() + ")" + " logged in!");
@@ -368,21 +411,35 @@ namespace Server
                 {
                     bool verifiedMessage = false;
 
-                    foreach (User user in this.users)
+                    for (int i = 0; i < this.users.Count; i++)
                     {
-                        if (user.Username == messageArray[0] && user.SessionKey == messageArray[2])
+                        if (this.users[i].Username == messageArray[0] && this.users[i].SessionKey == messageArray[2])
                         {
                             verifiedMessage = true;
                             break;
                         }
                     }
 
+                    /*foreach (User user in this.users)
+                    {
+                        if (user.Username == messageArray[0] && user.SessionKey == messageArray[2])
+                        {
+                            verifiedMessage = true;
+                            break;
+                        }
+                    }*/
+
                     if (verifiedMessage == true)
                     {
-                        foreach (User user in this.users)
+                        for (int i = 0; i < this.users.Count; i++)
+                        {
+                            this.users[i].NetworkWatcher.Send(ProtocolCreator.NewMessage(messageArray[0] + ": " + messageArray[1]));
+                        }
+
+                        /*foreach (User user in this.users)
                         {
                             user.NetworkWatcher.Send(ProtocolCreator.NewMessage(messageArray[0] + ": " + messageArray[1]));
-                        }
+                        }*/
                     }
                 }
             }
@@ -394,7 +451,19 @@ namespace Server
             {
                 try
                 {
-                    foreach (User user in this.users)
+                    for (int i = 0; i < this.users.Count; i++)
+                    {
+                        if (((IPEndPoint)this.users[i].NetworkWatcher.Client.Client.RemoteEndPoint).Address == ((IPEndPoint)args.Client.Client.RemoteEndPoint).Address)
+                        {
+                            if (((IPEndPoint)this.users[i].NetworkWatcher.Client.Client.RemoteEndPoint).Port == ((IPEndPoint)args.Client.Client.RemoteEndPoint).Port)
+                            {
+                                this.RemoveUser(this.users[i].Username, this.users[i].SessionKey);
+                                break;
+                            }
+                        }
+                    }
+
+                    /*foreach (User user in this.users)
                     {
                         if (((IPEndPoint)user.NetworkWatcher.Client.Client.RemoteEndPoint).Address == ((IPEndPoint)args.Client.Client.RemoteEndPoint).Address)
                         {
@@ -404,7 +473,7 @@ namespace Server
                                 break;
                             }
                         }
-                    }
+                    }*/
                 }
                 catch
                 {
