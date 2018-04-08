@@ -73,12 +73,6 @@ namespace Server
         {
             while (this.isReading == true)
             {
-                /*if (this.stream.DataAvailable == false)
-                {
-                    Thread.Sleep(10);
-                    continue;
-                }*/
-
                 List<byte> receivedBytes = new List<byte>();
                 byte[] buffer = new byte[1];
 
@@ -86,24 +80,37 @@ namespace Server
                 {
                     this.stream.Read(buffer, 0, 1);
 
-                    if (buffer[0] == 127)
-                    {
-                        break;
-                    }
-
                     receivedBytes.Add(buffer[0]);
                 }
 
-                if (receivedBytes.Count >= 6)
+                int offset = 0;
+
+                while (offset < receivedBytes.Count)
                 {
-                    if (receivedBytes[0] == 67 && receivedBytes[1] == 72 && receivedBytes[2] == 65 && receivedBytes[3] == 84)
+                    List<byte> protocolBytes = new List<byte>();
+
+                    for (int i = offset; i < receivedBytes.Count; i++)
                     {
-                        if (receivedBytes[4] == 73 && receivedBytes[5] == 65)
+                        if (receivedBytes[i] == 127)
                         {
-                            continue;
+                            offset = i + 1;
+                            break;
                         }
 
-                        this.FireOnDataReceived(receivedBytes.ToArray());
+                        protocolBytes.Add(receivedBytes[i]);
+                    }
+
+                    if (protocolBytes.Count >= 6)
+                    {
+                        if (protocolBytes[0] == 67 && protocolBytes[1] == 72 && protocolBytes[2] == 65 && protocolBytes[3] == 84)
+                        {
+                            if (protocolBytes[4] == 73 && protocolBytes[5] == 65)
+                            {
+                                continue;
+                            }
+
+                            this.FireOnDataReceived(protocolBytes.ToArray());
+                        }
                     }
                 }
             }
