@@ -34,7 +34,7 @@ namespace Server
             try
             {
                 this.stream = this.Client.GetStream();
-                this.readThread = new Thread(this.Read2);
+                this.readThread = new Thread(this.Read);
                 this.isReading = true;
                 this.readThread.Start();
 
@@ -109,49 +109,6 @@ namespace Server
                         this.FireOnDataReceived(receivedBytes.ToArray());
 
                     }
-                }
-            }
-        }
-
-        private void Read2()
-        {
-            while (this.isReading == true)
-            {
-                try
-                {
-                    var receivedBytes = new List<byte>();
-                    var buffer = new byte[1];
-                    int len = 0;
-
-                    while (true)
-                    {
-                        len = this.stream.Read(buffer, 0, 1);
-
-                        if (buffer[0] == 127)
-                        {
-                            break;
-                        }
-
-                        receivedBytes.Add(buffer[0]);
-                    }
-
-                    if (receivedBytes.Count >= 6)
-                    {
-                        if (receivedBytes[0] == 67 && receivedBytes[1] == 72 && receivedBytes[2] == 65 && receivedBytes[3] == 84)
-                        {
-                            if (receivedBytes[4] == 73 && receivedBytes[5] == 65)
-                            {
-                                continue;
-                            }
-
-                            this.FireOnDataReceived(receivedBytes.ToArray());
-
-                        }
-                    }
-                }
-                catch
-                {
-                    this.FireOnConnectionLost();
                 }
             }
         }
