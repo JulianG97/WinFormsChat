@@ -107,7 +107,6 @@ namespace Server
                         }
 
                         this.FireOnDataReceived(receivedBytes.ToArray());
-
                     }
                 }
             }
