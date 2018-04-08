@@ -88,11 +88,11 @@ namespace Client
         {
             while (this.isReading == true)
             {
-                if (this.stream.DataAvailable == false)
+                /*if (this.stream.DataAvailable == false)
                 {
                     Thread.Sleep(10);
                     continue;
-                }
+                }*/
 
                 List<byte> receivedBytes = new List<byte>();
                 byte[] buffer = new byte[1];
