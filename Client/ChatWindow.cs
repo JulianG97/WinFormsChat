@@ -15,6 +15,8 @@ namespace Client
         private string username;
         private string sessionkey;
         private NetworkWatcher networkWatcher;
+        private static object onlineUserBoxLocker;
+        private static object messageBoxLocker;
 
         public ChatWindow(string username, string sessionkey, NetworkWatcher networkWatcher)
         {
@@ -24,6 +26,8 @@ namespace Client
             this.username = username;
             this.usernameLabel.Text = username + ":";
             this.sessionkey = sessionkey;
+            onlineUserBoxLocker = new object();
+            messageBoxLocker = new object();
             this.networkWatcher = networkWatcher;
             this.networkWatcher.ConnectionLost += this.ConnectionLost;
             this.networkWatcher.DataReceived += this.DataReceived;
@@ -62,87 +66,96 @@ namespace Client
 
         private void AddUserToOnlineBox(string username)
         {
-            MethodInvoker methodInvokerDelegate = delegate ()
+            lock (onlineUserBoxLocker)
             {
-                string[] newOnlineUserBox = new string[this.onlineUserRichTextBox.Lines.Length + 1];
-
-                for (int i = 0; i < this.onlineUserRichTextBox.Lines.Length; i++)
+                MethodInvoker methodInvokerDelegate = delegate ()
                 {
-                    newOnlineUserBox[i] = this.onlineUserRichTextBox.Lines[i];
+                    string[] newOnlineUserBox = new string[this.onlineUserRichTextBox.Lines.Length + 1];
+
+                    for (int i = 0; i < this.onlineUserRichTextBox.Lines.Length; i++)
+                    {
+                        newOnlineUserBox[i] = this.onlineUserRichTextBox.Lines[i];
+                    }
+
+                    newOnlineUserBox[this.onlineUserRichTextBox.Lines.Length] = username;
+
+                    this.onlineUserRichTextBox.Lines = newOnlineUserBox;
+                };
+
+                if (this.InvokeRequired)
+                {
+                    this.Invoke(methodInvokerDelegate);
                 }
-
-                newOnlineUserBox[this.onlineUserRichTextBox.Lines.Length] = username;
-
-                this.onlineUserRichTextBox.Lines = newOnlineUserBox;
-            };
-
-            if (this.InvokeRequired)
-            {
-                this.Invoke(methodInvokerDelegate);
-            }
-            else
-            {
-                methodInvokerDelegate();
+                else
+                {
+                    methodInvokerDelegate();
+                }
             }
         }
 
         private void RemoveUserFromOnlineBox(string username)
         {
-            MethodInvoker methodInvokerDelegate = delegate ()
+            lock (onlineUserBoxLocker)
             {
-                string[] newOnlineUserBox = new string[this.onlineUserRichTextBox.Lines.Length - 1];
-
-                for (int i = 0, j = 0; i < this.onlineUserRichTextBox.Lines.Length; i++, j++)
+                MethodInvoker methodInvokerDelegate = delegate ()
                 {
-                    if (this.onlineUserRichTextBox.Lines[i] != username)
+                    string[] newOnlineUserBox = new string[this.onlineUserRichTextBox.Lines.Length - 1];
+
+                    for (int i = 0, j = 0; i < this.onlineUserRichTextBox.Lines.Length; i++, j++)
                     {
-                        newOnlineUserBox[j] = this.onlineUserRichTextBox.Lines[i];
+                        if (this.onlineUserRichTextBox.Lines[i] != username)
+                        {
+                            newOnlineUserBox[j] = this.onlineUserRichTextBox.Lines[i];
+                        }
+                        else
+                        {
+                            j--;
+                        }
                     }
-                    else
-                    {
-                        j--;
-                    }
+
+                    this.onlineUserRichTextBox.Lines = newOnlineUserBox;
+                };
+
+                if (this.InvokeRequired)
+                {
+                    this.Invoke(methodInvokerDelegate);
                 }
-
-                this.onlineUserRichTextBox.Lines = newOnlineUserBox;
-            };
-
-            if (this.InvokeRequired)
-            {
-                this.Invoke(methodInvokerDelegate);
-            }
-            else
-            {
-                methodInvokerDelegate();
+                else
+                {
+                    methodInvokerDelegate();
+                }
             }
         }
 
         private void AddMessageToChat(string message)
         {
-            MethodInvoker methodInvokerDelegate = delegate ()
+            lock (messageBoxLocker)
             {
-                string[] newMessageBox = new string[this.messageRichTextBox.Lines.Length + 1];
-
-                for (int i = 0; i < this.messageRichTextBox.Lines.Length; i++)
+                MethodInvoker methodInvokerDelegate = delegate ()
                 {
-                    newMessageBox[i] = this.messageRichTextBox.Lines[i];
+                    string[] newMessageBox = new string[this.messageRichTextBox.Lines.Length + 1];
+
+                    for (int i = 0; i < this.messageRichTextBox.Lines.Length; i++)
+                    {
+                        newMessageBox[i] = this.messageRichTextBox.Lines[i];
+                    }
+
+                    newMessageBox[this.messageRichTextBox.Lines.Length] = message;
+
+                    this.messageRichTextBox.Lines = newMessageBox;
+
+                    this.messageRichTextBox.SelectionStart = this.messageRichTextBox.Text.Length;
+                    this.messageRichTextBox.ScrollToCaret();
+                };
+
+                if (this.InvokeRequired)
+                {
+                    this.Invoke(methodInvokerDelegate);
                 }
-
-                newMessageBox[this.messageRichTextBox.Lines.Length] = message;
-
-                this.messageRichTextBox.Lines = newMessageBox;
-
-                this.messageRichTextBox.SelectionStart = this.messageRichTextBox.Text.Length;
-                this.messageRichTextBox.ScrollToCaret();
-            };
-
-            if (this.InvokeRequired)
-            {
-                this.Invoke(methodInvokerDelegate);
-            }
-            else
-            {
-                methodInvokerDelegate();
+                else
+                {
+                    methodInvokerDelegate();
+                }
             }
         }
 
