@@ -244,10 +244,10 @@ namespace Server
 
         private void CreateNewUser(string username, string sessionkey, NetworkWatcher networkWatcher)
         {
-            lock (locker)
-            {
+            //lock (locker)
+            //{
                 this.users.Add(new User(username, networkWatcher, sessionkey));
-            }
+            //}
         }
 
         private void DataReceived(object sender, DataReceivedEventArgs args)
@@ -355,11 +355,13 @@ namespace Server
             {
                 if (CheckIfLegalUsername(username) == true)
                 {
+                    // Sends session key to client
                     Protocol protocol = ProtocolCreator.SessionKey();
                     this.CreateNewUser(username, Encoding.ASCII.GetString(protocol.Content), networkWatcher);
 
                     networkWatcher.Send(protocol);
 
+                    // Waits until the client sent session key received message
                     if (WaitForSessionKeyReceived(username, 1000) == true)
                     {
                         // Sends the new user all online users
