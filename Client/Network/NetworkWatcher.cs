@@ -127,7 +127,7 @@ namespace Client
 
         private void Read2()
         {
-            while (true)
+            while (this.isReading == true)
             {
                 try
                 {
@@ -135,8 +135,13 @@ namespace Client
                     var buffer = new byte[1];
                     int len = 0;
 
-                    while (buffer[0] != 127)
+                    while (true)
                     {
+                        if (buffer[0] == 127)
+                        {
+                            break;
+                        }
+
                         len = this.stream.Read(buffer, 0, 1);
                         received.Add(buffer[0]);
                     }
