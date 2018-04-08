@@ -43,7 +43,7 @@ namespace Client
 
                 this.stream = this.client.GetStream();
 
-                this.readThread = new Thread(Read);
+                this.readThread = new Thread(Read2);
                 this.isReading = true;
                 this.readThread.Start();
                 this.Connected = true;
@@ -121,6 +121,31 @@ namespace Client
                         this.FireOnDataReceived(receivedBytes.ToArray());
 
                     }
+                }
+            }
+        }
+
+        private void Read2()
+        {
+            while (true)
+            {
+                try
+                {
+                    var received = new List<byte>();
+                    var buffer = new byte[1];
+                    int len = 0;
+
+                    while (buffer[0] != 127)
+                    {
+                        len = this.stream.Read(buffer, 0, 1);
+                        received.Add(buffer[0]);
+                    }
+
+                    this.FireOnDataReceived(received.ToArray());
+                }
+                catch
+                {
+                    this.FireOnConnectionLost();
                 }
             }
         }
