@@ -234,13 +234,6 @@ namespace Server
                             return false;
                         }
                     }
-                    /*foreach (User user in this.users)
-                    {
-                        if (user.Username == username)
-                        {
-                            return false;
-                        }
-                    }*/
 
                     return true;
                 }
@@ -307,15 +300,12 @@ namespace Server
 
         private void UserReceivedSessionKey(string username, string sessionkey)
         {
-            lock (locker)
+            for (int i = 0; i < this.users.Count; i++)
             {
-                for (int i = 0; i < this.users.Count; i++)
+                if (this.users[i].Username == username && this.users[i].SessionKey == sessionkey)
                 {
-                    if (this.users[i].Username == username && this.users[i].SessionKey == sessionkey)
-                    {
-                        this.users[i].SessionKeyReceived = true;
-                        break;
-                    }
+                    this.users[i].SessionKeyReceived = true;
+                    break;
                 }
             }
         }
@@ -336,15 +326,6 @@ namespace Server
                     }
                 }
 
-                /*foreach (User user in this.users)
-                {
-                    if (user.Username == username && user.SessionKey == sessionkey)
-                    {
-                        legitSessionKey = true;
-                        break;
-                    }
-                }*/
-
                 if (legitSessionKey == true)
                 {
                     for (int i = 0; i < this.users.Count; i++)
@@ -357,17 +338,6 @@ namespace Server
                             break;
                         }
                     }
-                    // Remove user from user list on server
-                    /*foreach (User user in this.users)
-                    {
-                        if (user.Username == username)
-                        {
-                            this.AddLineToLog(username + " (" + ((IPEndPoint)user.NetworkWatcher.Client.Client.RemoteEndPoint).Address.ToString() + ")" + " logged out!");
-                            user.NetworkWatcher.Stop();
-                            this.users.Remove(user);
-                            break;
-                        }
-                    }*/
                 }
 
                 // Sends all users the user who logged out
@@ -402,21 +372,6 @@ namespace Server
                             }
                         }
 
-                        /*foreach (User user in this.users)
-                        {
-                            if (user.Username != username)
-                            {
-                                networkWatcher.Send(ProtocolCreator.AddUser(user.Username));
-                            }
-                        }*/
-
-                        // Sends all users the new user
-                        /*foreach (User user in this.users)
-                        {
-                            user.NetworkWatcher.Send(ProtocolCreator.AddUser(username));
-                            user.NetworkWatcher.Send(ProtocolCreator.NewMessage("SERVER: " + username + " logged in!"));
-                        }*/
-
                         for (int i = 0; i < this.users.Count; i++)
                         {
                             this.users[i].NetworkWatcher.Send(ProtocolCreator.AddUser(username));
@@ -435,39 +390,38 @@ namespace Server
 
         private bool WaitForSessionKeyReceived(string username, int milliseconds)
         {
-            User user = null;
+            //User user = null;
 
-            lock (locker)
+            int userPosition = -1;
+
+            for (int i = 0; i < this.users.Count; i++)
             {
-                for (int i = 0; i < this.users.Count; i++)
+                if (this.users[i].Username == username)
                 {
-                    if (this.users[i].Username == username)
+                    userPosition = i;
+                    break;
+                }
+            }
+
+            if (userPosition != -1)
+            {
+                for (int i = 0; i < milliseconds / 10; i++)
+                {
+                    if (this.users[userPosition].SessionKeyReceived == true)
                     {
-                        user = this.users[i];
                         break;
                     }
+
+                    Thread.Sleep(10);
                 }
 
-                if (user != null)
+                if (this.users[userPosition].SessionKeyReceived == false)
                 {
-                    for (int i = 0; i < milliseconds / 10; i++)
-                    {
-                        if (user.SessionKeyReceived == true)
-                        {
-                            break;
-                        }
-
-                        Thread.Sleep(10);
-                    }
-
-                    if (user.SessionKeyReceived == false)
-                    {
-                        return false;
-                    }
-                    else
-                    {
-                        return true;
-                    }
+                    return false;
+                }
+                else
+                {
+                    return true;
                 }
             }
 
@@ -493,26 +447,12 @@ namespace Server
                         }
                     }
 
-                    /*foreach (User user in this.users)
-                    {
-                        if (user.Username == messageArray[0] && user.SessionKey == messageArray[2])
-                        {
-                            verifiedMessage = true;
-                            break;
-                        }
-                    }*/
-
                     if (verifiedMessage == true)
                     {
                         for (int i = 0; i < this.users.Count; i++)
                         {
                             this.users[i].NetworkWatcher.Send(ProtocolCreator.NewMessage(messageArray[0] + ": " + messageArray[1]));
                         }
-
-                        /*foreach (User user in this.users)
-                        {
-                            user.NetworkWatcher.Send(ProtocolCreator.NewMessage(messageArray[0] + ": " + messageArray[1]));
-                        }*/
                     }
                 }
             }
@@ -535,18 +475,6 @@ namespace Server
                             }
                         }
                     }
-
-                    /*foreach (User user in this.users)
-                    {
-                        if (((IPEndPoint)user.NetworkWatcher.Client.Client.RemoteEndPoint).Address == ((IPEndPoint)args.Client.Client.RemoteEndPoint).Address)
-                        {
-                            if (((IPEndPoint)user.NetworkWatcher.Client.Client.RemoteEndPoint).Port == ((IPEndPoint)args.Client.Client.RemoteEndPoint).Port)
-                            {
-                                this.RemoveUser(user.Username, user.SessionKey);
-                                break;
-                            }
-                        }
-                    }*/
                 }
                 catch
                 {
