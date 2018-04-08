@@ -131,7 +131,7 @@ namespace Client
             {
                 try
                 {
-                    var received = new List<byte>();
+                    var receivedBytes = new List<byte>();
                     var buffer = new byte[1];
                     int len = 0;
 
@@ -143,10 +143,22 @@ namespace Client
                         }
 
                         len = this.stream.Read(buffer, 0, 1);
-                        received.Add(buffer[0]);
+                        receivedBytes.Add(buffer[0]);
                     }
 
-                    this.FireOnDataReceived(received.ToArray());
+                    if (receivedBytes.Count >= 6)
+                    {
+                        if (receivedBytes[0] == 67 && receivedBytes[1] == 72 && receivedBytes[2] == 65 && receivedBytes[3] == 84)
+                        {
+                            if (receivedBytes[4] == 73 && receivedBytes[5] == 65)
+                            {
+                                continue;
+                            }
+
+                            this.FireOnDataReceived(receivedBytes.ToArray());
+
+                        }
+                    }
                 }
                 catch
                 {
