@@ -12,8 +12,6 @@ namespace Server
     {
         private NetworkStream stream;
         private bool isReading;
-        private Thread readThread;
-        private Thread isAliveThread;
 
         public event EventHandler<DataReceivedEventArgs> DataReceived;
         public event EventHandler<ConnectionLostEventArgs> ConnectionLost;
@@ -34,13 +32,12 @@ namespace Server
             try
             {
                 this.stream = this.Client.GetStream();
-                this.readThread = new Thread(this.Read);
+                Thread readThread = new Thread(this.Read);
                 this.isReading = true;
-                this.readThread.Start();
+                readThread.Start();
 
-                this.isAliveThread = new Thread(this.IsAliveWorker);
-                this.isAliveThread.Priority = ThreadPriority.Highest;
-                this.isAliveThread.Start();
+                Thread isAliveThread = new Thread(this.IsAliveWorker);
+                isAliveThread.Start();
             }
             catch
             {
@@ -76,11 +73,11 @@ namespace Server
         {
             while (this.isReading == true)
             {
-                if (this.stream.DataAvailable == false)
+                /*if (this.stream.DataAvailable == false)
                 {
                     Thread.Sleep(10);
                     continue;
-                }
+                }*/
 
                 List<byte> receivedBytes = new List<byte>();
                 byte[] buffer = new byte[1];

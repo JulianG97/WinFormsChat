@@ -14,8 +14,6 @@ namespace Client
         private NetworkStream stream;
         private IPEndPoint ipEndPoint;
         private bool isReading;
-        private Thread readThread;
-        private Thread isAliveThread;
 
         public event EventHandler<DataReceivedEventArgs> DataReceived;
         public event EventHandler<EventArgs> ConnectionLost;
@@ -43,14 +41,13 @@ namespace Client
 
                 this.stream = this.client.GetStream();
 
-                this.readThread = new Thread(Read);
+                Thread readThread = new Thread(Read);
                 this.isReading = true;
-                this.readThread.Start();
+                readThread.Start();
                 this.Connected = true;
 
-                this.isAliveThread = new Thread(this.IsAliveWorker);
-                this.isAliveThread.Priority = ThreadPriority.Highest;
-                this.isAliveThread.Start();
+                Thread isAliveThread = new Thread(this.IsAliveWorker);
+                isAliveThread.Start();
             }
             catch
             {
