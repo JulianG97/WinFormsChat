@@ -267,6 +267,20 @@ namespace Server
                     this.AddUser(username, (NetworkWatcher)sender);
                 }
             }
+            else if (args.Protocol.Type.SequenceEqual(ProtocolType.SessionKeyReceived))
+            {
+                if (args.Protocol.Content != null && args.Protocol.Content.Length >= 1)
+                {
+                    string usernameAndSessionKey = Encoding.ASCII.GetString(args.Protocol.Content);
+
+                    string[] usernameAndSessionKeyArray = usernameAndSessionKey.Split('-');
+
+                    if (usernameAndSessionKeyArray.Length == 2)
+                    {
+                        this.UserReceivedSessionKey(usernameAndSessionKeyArray[0], usernameAndSessionKeyArray[1]);
+                    }
+                }
+            }
             else if (args.Protocol.Type.SequenceEqual(ProtocolType.LogOut))
             {
                 if (args.Protocol.Content != null && args.Protocol.Content.Length >= 1)
@@ -287,6 +301,21 @@ namespace Server
                 {
                     string message = Encoding.ASCII.GetString(args.Protocol.Content);
                     this.ForwardMessageToAllUsers(message);
+                }
+            }
+        }
+
+        private void UserReceivedSessionKey(string username, string sessionkey)
+        {
+            lock (locker)
+            {
+                for (int i = 0; i < this.users.Count; i++)
+                {
+                    if (this.users[i].Username == username && this.users[i].SessionKey == sessionkey)
+                    {
+                        this.users[i].SessionKeyReceived = true;
+                        break;
+                    }
                 }
             }
         }
@@ -361,44 +390,88 @@ namespace Server
 
                     networkWatcher.Send(protocol);
 
-                    //Thread.Sleep(100);
-
-                    // Sends the new user all online users
-
-                    for (int i = 0; i < this.users.Count; i++)
+                    if (WaitForSessionKeyReceived(username, 1000) == true)
                     {
-                        if (this.users[i].Username != username)
+                        // Sends the new user all online users
+
+                        for (int i = 0; i < this.users.Count; i++)
                         {
-                            networkWatcher.Send(ProtocolCreator.AddUser(this.users[i].Username));
+                            if (this.users[i].Username != username)
+                            {
+                                networkWatcher.Send(ProtocolCreator.AddUser(this.users[i].Username));
+                            }
                         }
-                    }
 
-                    //Thread.Sleep(100);
-
-                    /*foreach (User user in this.users)
-                    {
-                        if (user.Username != username)
+                        /*foreach (User user in this.users)
                         {
-                            networkWatcher.Send(ProtocolCreator.AddUser(user.Username));
+                            if (user.Username != username)
+                            {
+                                networkWatcher.Send(ProtocolCreator.AddUser(user.Username));
+                            }
+                        }*/
+
+                        // Sends all users the new user
+                        /*foreach (User user in this.users)
+                        {
+                            user.NetworkWatcher.Send(ProtocolCreator.AddUser(username));
+                            user.NetworkWatcher.Send(ProtocolCreator.NewMessage("SERVER: " + username + " logged in!"));
+                        }*/
+
+                        for (int i = 0; i < this.users.Count; i++)
+                        {
+                            this.users[i].NetworkWatcher.Send(ProtocolCreator.AddUser(username));
+                            this.users[i].NetworkWatcher.Send(ProtocolCreator.NewMessage("SERVER: " + username + " logged in!"));
                         }
-                    }*/
 
-                    // Sends all users the new user
-                    /*foreach (User user in this.users)
-                    {
-                        user.NetworkWatcher.Send(ProtocolCreator.AddUser(username));
-                        user.NetworkWatcher.Send(ProtocolCreator.NewMessage("SERVER: " + username + " logged in!"));
-                    }*/
-
-                    for (int i = 0; i < this.users.Count; i++)
-                    {
-                        this.users[i].NetworkWatcher.Send(ProtocolCreator.AddUser(username));
-                        this.users[i].NetworkWatcher.Send(ProtocolCreator.NewMessage("SERVER: " + username + " logged in!"));
+                        this.AddLineToLog(username + " (" + ((IPEndPoint)networkWatcher.Client.Client.RemoteEndPoint).Address.ToString() + ")" + " logged in!");
                     }
-
-                    this.AddLineToLog(username + " (" + ((IPEndPoint)networkWatcher.Client.Client.RemoteEndPoint).Address.ToString() + ")" + " logged in!");
+                    else
+                    {
+                        // Remove user from users without sending all users a logout message
+                    }
                 }
             }
+        }
+
+        private bool WaitForSessionKeyReceived(string username, int milliseconds)
+        {
+            User user = null;
+
+            lock (locker)
+            {
+                for (int i = 0; i < this.users.Count; i++)
+                {
+                    if (this.users[i].Username == username)
+                    {
+                        user = this.users[i];
+                        break;
+                    }
+                }
+
+                if (user != null)
+                {
+                    for (int i = 0; i < milliseconds / 10; i++)
+                    {
+                        if (user.SessionKeyReceived == true)
+                        {
+                            break;
+                        }
+
+                        Thread.Sleep(10);
+                    }
+
+                    if (user.SessionKeyReceived == false)
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
 
         private void ForwardMessageToAllUsers(string message)

@@ -20,6 +20,12 @@ namespace Client
             return protocol;
         }
 
+        public static Protocol SessionKeyReceived(string username, string sessionkey)
+        {
+            Protocol protocol = new Protocol(ProtocolType.SessionKeyReceived, Encoding.ASCII.GetBytes(username + "-" + sessionkey));
+            return protocol;
+        }
+
         public static Protocol LogOut(string username, string sessionkey)
         {
             Protocol protocol = new Protocol(ProtocolType.LogOut, Encoding.ASCII.GetBytes(username + "-" + sessionkey));

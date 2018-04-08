@@ -26,11 +26,15 @@ namespace Client
             this.username = username;
             this.usernameLabel.Text = username + ":";
             this.sessionkey = sessionkey;
+
             onlineUserBoxLocker = new object();
             messageBoxLocker = new object();
+
             this.networkWatcher = networkWatcher;
             this.networkWatcher.ConnectionLost += this.ConnectionLost;
             this.networkWatcher.DataReceived += this.DataReceived;
+
+            this.networkWatcher.Send(ProtocolCreator.SessionKeyReceived(this.username, this.sessionkey));
         }
 
         private void CleanClosing(object sender, FormClosingEventArgs args)

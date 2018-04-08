@@ -14,6 +14,7 @@ namespace Client
         public static byte[] AddUser = new byte[] { 65, 85 };
         public static byte[] RemoveUser = new byte[] { 82, 85 };
         public static byte[] SessionKey = new byte[] { 83, 69 };
+        public static byte[] SessionKeyReceived = new byte[] { 83, 82 };
         public static byte[] Message = new byte[] { 77, 69 };
         public static byte[] NewMessage = new byte[] { 78, 77 };
     }
