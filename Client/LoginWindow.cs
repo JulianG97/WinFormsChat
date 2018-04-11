@@ -91,7 +91,7 @@ namespace Client
 
         private void ConnectionLost(object sender, EventArgs args)
         {
-
+            MessageBox.Show("Can't connect to the server! Check the IP address and port of the server or try again later.", "Chat", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
         }
 
         private void DataReceived(object sender, DataReceivedEventArgs args)
