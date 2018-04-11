@@ -270,7 +270,7 @@ namespace Server
 
                     if (usernameAndSessionKeyArray.Length == 2)
                     {
-                        this.UserReceivedSessionKey(usernameAndSessionKeyArray[0], usernameAndSessionKeyArray[1]);
+                        this.FinishUserLogin(usernameAndSessionKeyArray[0], usernameAndSessionKeyArray[1]);
                     }
                 }
             }
@@ -298,7 +298,7 @@ namespace Server
             }
         }
 
-        private void UserReceivedSessionKey(string username, string sessionkey)
+        /*private void UserReceivedSessionKey(string username, string sessionkey)
         {
             for (int i = 0; i < this.users.Count; i++)
             {
@@ -308,7 +308,7 @@ namespace Server
                     break;
                 }
             }
-        }
+        }*/
 
         private void RemoveUser(string username, string sessionkey)
         {
@@ -360,37 +360,45 @@ namespace Server
                     this.CreateNewUser(username, Encoding.ASCII.GetString(protocol.Content), networkWatcher);
 
                     networkWatcher.Send(protocol);
-
-                    // Waits until the client sent session key received message
-                    if (WaitForSessionKeyReceived(username, 1000) == true)
-                    {
-                        // Sends the new user all online users
-
-                        for (int i = 0; i < this.users.Count; i++)
-                        {
-                            if (this.users[i].Username != username)
-                            {
-                                networkWatcher.Send(ProtocolCreator.AddUser(this.users[i].Username));
-                            }
-                        }
-
-                        for (int i = 0; i < this.users.Count; i++)
-                        {
-                            this.users[i].NetworkWatcher.Send(ProtocolCreator.AddUser(username));
-                            this.users[i].NetworkWatcher.Send(ProtocolCreator.NewMessage("SERVER: " + username + " logged in!"));
-                        }
-
-                        this.AddLineToLog(username + " (" + ((IPEndPoint)networkWatcher.Client.Client.RemoteEndPoint).Address.ToString() + ")" + " logged in!");
-                    }
-                    else
-                    {
-                        // Remove user from users without sending all users a logout message
-                    }
                 }
             }
         }
 
-        private bool WaitForSessionKeyReceived(string username, int milliseconds)
+        private void FinishUserLogin(string username, string sessionkey)
+        {
+            NetworkWatcher networkWatcher = null;
+
+            // Gets the networkWatcher of the new user
+            for (int i = 0; i < this.users.Count; i++)
+            {
+                if (this.users[i].Username == username && this.users[i].SessionKey == sessionkey)
+                {
+                    networkWatcher = this.users[i].NetworkWatcher;
+                }
+            }
+
+            if (networkWatcher != null)
+            {
+                // Sends the new user all online users
+                for (int i = 0; i < this.users.Count; i++)
+                {
+                    if (this.users[i].Username != username)
+                    {
+                        networkWatcher.Send(ProtocolCreator.AddUser(this.users[i].Username));
+                    }
+                }
+
+                for (int i = 0; i < this.users.Count; i++)
+                {
+                    this.users[i].NetworkWatcher.Send(ProtocolCreator.AddUser(username));
+                    this.users[i].NetworkWatcher.Send(ProtocolCreator.NewMessage("SERVER: " + username + " logged in!"));
+                }
+
+                this.AddLineToLog(username + " (" + ((IPEndPoint)networkWatcher.Client.Client.RemoteEndPoint).Address.ToString() + ")" + " logged in!");
+            }
+        }
+
+        /*private bool WaitForSessionKeyReceived(string username, int milliseconds)
         {
             //User user = null;
 
@@ -428,7 +436,7 @@ namespace Server
             }
 
             return false;
-        }
+        }*/
 
         private void ForwardMessageToAllUsers(string message)
         {
