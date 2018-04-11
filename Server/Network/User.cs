@@ -15,7 +15,6 @@ namespace Server
             this.Username = username;
             this.NetworkWatcher = networkWatcher;
             this.SessionKey = sessionkey;
-            //this.SessionKeyReceived = false;
         }
 
         public string Username
@@ -35,11 +34,5 @@ namespace Server
             get;
             private set;
         }
-
-        /*public bool SessionKeyReceived
-        {
-            get;
-            set;
-        }*/
     }
 }

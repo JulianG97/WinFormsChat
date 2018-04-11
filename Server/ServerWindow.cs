@@ -18,11 +18,13 @@ namespace Server
         private List<User> users;
         private TcpListener listener;
         private Thread listenerThread;
-        private static object locker;
+        private static object usersLocker;
+        private static object logLocker;
 
         public ServerWindow()
         {
             InitializeComponent();
+            logLocker = new object();
             this.FormClosing += this.CleanClosing;
         }
 
@@ -45,7 +47,7 @@ namespace Server
                     try
                     {
                         this.isRunning = true;
-                        locker = new object();
+                        usersLocker = new object();
                         this.portTextBox.Enabled = false;
                         this.ipAddressPubTextBox.Text = this.GetExternalIPAddress().ToString();
                         this.ipAddressPrivTextBox.Text = this.GetInternalIPAddress().ToString();
@@ -166,32 +168,35 @@ namespace Server
 
         private void AddLineToLog(string line)
         {
-            MethodInvoker methodInvokerDelegate = delegate ()
+            lock (logLocker)
             {
-                string time = DateTime.Now.ToString("[HH:mm]");
-
-                string[] newLog = new string[this.logRichTextBox.Lines.Length + 1];
-
-                for (int i = 0; i < this.logRichTextBox.Lines.Length; i++)
+                MethodInvoker methodInvokerDelegate = delegate ()
                 {
-                    newLog[i] = this.logRichTextBox.Lines[i];
+                    string time = DateTime.Now.ToString("[HH:mm]");
+
+                    string[] newLog = new string[this.logRichTextBox.Lines.Length + 1];
+
+                    for (int i = 0; i < this.logRichTextBox.Lines.Length; i++)
+                    {
+                        newLog[i] = this.logRichTextBox.Lines[i];
+                    }
+
+                    newLog[this.logRichTextBox.Lines.Length] = time + " " + line;
+
+                    this.logRichTextBox.Lines = newLog;
+
+                    this.logRichTextBox.SelectionStart = this.logRichTextBox.Text.Length;
+                    this.logRichTextBox.ScrollToCaret();
+                };
+
+                if (this.InvokeRequired)
+                {
+                    this.Invoke(methodInvokerDelegate);
                 }
-
-                newLog[this.logRichTextBox.Lines.Length] = time + " " + line;
-
-                this.logRichTextBox.Lines = newLog;
-
-                this.logRichTextBox.SelectionStart = this.logRichTextBox.Text.Length;
-                this.logRichTextBox.ScrollToCaret();
-            };
-
-            if (this.InvokeRequired)
-            {
-                this.Invoke(methodInvokerDelegate);
-            }
-            else
-            {
-                methodInvokerDelegate();
+                else
+                {
+                    methodInvokerDelegate();
+                }
             }
         }
 
@@ -212,8 +217,18 @@ namespace Server
             }
             else
             {
-                this.listener.Stop();
                 this.isRunning = false;
+                this.listener.Stop();
+
+                // Close all open user connections
+                lock (usersLocker)
+                {
+                    for (int i = 0; i < this.users.Count; i++)
+                    {
+                        this.users[i].NetworkWatcher.Stop();
+                    }
+                }
+             
                 this.ipAddressPubTextBox.Text = string.Empty;
                 this.ipAddressPrivTextBox.Text = string.Empty;
                 this.portTextBox.Enabled = true;
@@ -223,7 +238,7 @@ namespace Server
 
         private bool CheckIfLegalUsername(string username)
         {
-            lock (locker)
+            lock (usersLocker)
             {
                 if (username.Length >= 3 && username.Length <= 10 && username != "SERVER")
                 {
@@ -244,10 +259,10 @@ namespace Server
 
         private void CreateNewUser(string username, string sessionkey, NetworkWatcher networkWatcher)
         {
-            //lock (locker)
-            //{
+            lock (usersLocker)
+            {
                 this.users.Add(new User(username, networkWatcher, sessionkey));
-            //}
+            }
         }
 
         private void DataReceived(object sender, DataReceivedEventArgs args)
@@ -298,21 +313,9 @@ namespace Server
             }
         }
 
-        /*private void UserReceivedSessionKey(string username, string sessionkey)
-        {
-            for (int i = 0; i < this.users.Count; i++)
-            {
-                if (this.users[i].Username == username && this.users[i].SessionKey == sessionkey)
-                {
-                    this.users[i].SessionKeyReceived = true;
-                    break;
-                }
-            }
-        }*/
-
         private void RemoveUser(string username, string sessionkey)
         {
-            lock (locker)
+            lock (usersLocker)
             {
                 // Verifys session key of the logout request
                 bool legitSessionKey = false;
@@ -341,17 +344,17 @@ namespace Server
                 }
 
                 // Sends all users the user who logged out
-                foreach (User user in this.users)
+                for (int i = 0; i < this.users.Count; i++)
                 {
-                    user.NetworkWatcher.Send(ProtocolCreator.RemoveUser(username));
-                    user.NetworkWatcher.Send(ProtocolCreator.NewMessage("SERVER: " + username + " logged out!"));
+                    this.users[i].NetworkWatcher.Send(ProtocolCreator.RemoveUser(username));
+                    this.users[i].NetworkWatcher.Send(ProtocolCreator.NewMessage("SERVER: " + username + " logged out!"));
                 }
             }
         }
 
         private void AddUser(string username, NetworkWatcher networkWatcher)
         {
-            lock (locker)
+            lock (usersLocker)
             {
                 if (CheckIfLegalUsername(username) == true)
                 {
@@ -366,81 +369,44 @@ namespace Server
 
         private void FinishUserLogin(string username, string sessionkey)
         {
-            NetworkWatcher networkWatcher = null;
-
-            // Gets the networkWatcher of the new user
-            for (int i = 0; i < this.users.Count; i++)
+            lock (usersLocker)
             {
-                if (this.users[i].Username == username && this.users[i].SessionKey == sessionkey)
-                {
-                    networkWatcher = this.users[i].NetworkWatcher;
-                }
-            }
+                NetworkWatcher networkWatcher = null;
 
-            if (networkWatcher != null)
-            {
-                // Sends the new user all online users
+                // Gets the networkWatcher of the new user
                 for (int i = 0; i < this.users.Count; i++)
                 {
-                    if (this.users[i].Username != username)
+                    if (this.users[i].Username == username && this.users[i].SessionKey == sessionkey)
                     {
-                        networkWatcher.Send(ProtocolCreator.AddUser(this.users[i].Username));
+                        networkWatcher = this.users[i].NetworkWatcher;
                     }
                 }
 
-                for (int i = 0; i < this.users.Count; i++)
+                if (networkWatcher != null)
                 {
-                    this.users[i].NetworkWatcher.Send(ProtocolCreator.AddUser(username));
-                    this.users[i].NetworkWatcher.Send(ProtocolCreator.NewMessage("SERVER: " + username + " logged in!"));
-                }
+                    // Sends the new user all online users
+                    for (int i = 0; i < this.users.Count; i++)
+                    {
+                        if (this.users[i].Username != username)
+                        {
+                            networkWatcher.Send(ProtocolCreator.AddUser(this.users[i].Username));
+                        }
+                    }
 
-                this.AddLineToLog(username + " (" + ((IPEndPoint)networkWatcher.Client.Client.RemoteEndPoint).Address.ToString() + ")" + " logged in!");
+                    for (int i = 0; i < this.users.Count; i++)
+                    {
+                        this.users[i].NetworkWatcher.Send(ProtocolCreator.AddUser(username));
+                        this.users[i].NetworkWatcher.Send(ProtocolCreator.NewMessage("SERVER: " + username + " logged in!"));
+                    }
+
+                    this.AddLineToLog(username + " (" + ((IPEndPoint)networkWatcher.Client.Client.RemoteEndPoint).Address.ToString() + ")" + " logged in!");
+                }
             }
         }
 
-        /*private bool WaitForSessionKeyReceived(string username, int milliseconds)
-        {
-            //User user = null;
-
-            int userPosition = -1;
-
-            for (int i = 0; i < this.users.Count; i++)
-            {
-                if (this.users[i].Username == username)
-                {
-                    userPosition = i;
-                    break;
-                }
-            }
-
-            if (userPosition != -1)
-            {
-                for (int i = 0; i < milliseconds / 10; i++)
-                {
-                    if (this.users[userPosition].SessionKeyReceived == true)
-                    {
-                        break;
-                    }
-
-                    Thread.Sleep(10);
-                }
-
-                if (this.users[userPosition].SessionKeyReceived == false)
-                {
-                    return false;
-                }
-                else
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }*/
-
         private void ForwardMessageToAllUsers(string message)
         {
-            lock (locker)
+            lock (usersLocker)
             {
                 string[] messageArray = message.Split('-');
 
@@ -470,7 +436,7 @@ namespace Server
 
         private void ConnectionLost(object sender, ConnectionLostEventArgs args)
         {
-            lock (locker)
+            lock (usersLocker)
             {
                 try
                 {
