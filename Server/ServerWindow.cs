@@ -393,6 +393,7 @@ namespace Server
                         }
                     }
 
+                    // Sends all users the user who logged in
                     for (int i = 0; i < this.users.Count; i++)
                     {
                         this.users[i].NetworkWatcher.Send(ProtocolCreator.AddUser(username));
@@ -452,10 +453,7 @@ namespace Server
                         }
                     }
                 }
-                catch
-                {
-
-                }
+                catch { }
             }
         }
     }
