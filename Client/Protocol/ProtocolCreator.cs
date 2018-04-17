@@ -16,25 +16,25 @@ namespace Client
 
         public static Protocol LogIn(string username)
         {
-            Protocol protocol = new Protocol(ProtocolType.LogIn, Encoding.ASCII.GetBytes(username));
+            Protocol protocol = new Protocol(ProtocolType.LogIn, Encoding.UTF8.GetBytes(username));
             return protocol;
         }
 
         public static Protocol SessionKeyReceived(string username, string sessionkey)
         {
-            Protocol protocol = new Protocol(ProtocolType.SessionKeyReceived, Encoding.ASCII.GetBytes(username + "-" + sessionkey));
+            Protocol protocol = new Protocol(ProtocolType.SessionKeyReceived, Encoding.UTF8.GetBytes(username + "-" + sessionkey));
             return protocol;
         }
 
         public static Protocol LogOut(string username, string sessionkey)
         {
-            Protocol protocol = new Protocol(ProtocolType.LogOut, Encoding.ASCII.GetBytes(username + "-" + sessionkey));
+            Protocol protocol = new Protocol(ProtocolType.LogOut, Encoding.UTF8.GetBytes(username + "-" + sessionkey));
             return protocol;
         }
 
         public static Protocol Message(string username, string message, string sessionkey)
         {
-            Protocol protocol = new Protocol(ProtocolType.Message, Encoding.ASCII.GetBytes(username + "-" + message + "-" + sessionkey));
+            Protocol protocol = new Protocol(ProtocolType.Message, Encoding.UTF8.GetBytes(username + "-" + message + "-" + sessionkey));
             return protocol;
         }
     }

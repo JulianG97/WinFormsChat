@@ -19,13 +19,13 @@ namespace Server
 
         public static Protocol AddUser(string username)
         {
-            Protocol protocol = new Protocol(ProtocolType.AddUser, Encoding.ASCII.GetBytes(username));
+            Protocol protocol = new Protocol(ProtocolType.AddUser, Encoding.UTF8.GetBytes(username));
             return protocol;
         }
 
         public static Protocol RemoveUser(string username)
         {
-            Protocol protocol = new Protocol(ProtocolType.RemoveUser, Encoding.ASCII.GetBytes(username));
+            Protocol protocol = new Protocol(ProtocolType.RemoveUser, Encoding.UTF8.GetBytes(username));
             return protocol;
         }
 
@@ -39,7 +39,7 @@ namespace Server
         {
             string time = DateTime.Now.ToString("[HH:mm]");
 
-            Protocol protocol = new Protocol(ProtocolType.NewMessage, Encoding.ASCII.GetBytes(time + " " + message));
+            Protocol protocol = new Protocol(ProtocolType.NewMessage, Encoding.UTF8.GetBytes(time + " " + message));
             return protocol;
         }
 

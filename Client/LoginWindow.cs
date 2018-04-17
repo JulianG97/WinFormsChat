@@ -98,7 +98,7 @@ namespace Client
         {
             if (args.Protocol.Type.SequenceEqual(ProtocolType.SessionKey))
             {
-                this.sessionkey = Encoding.ASCII.GetString(args.Protocol.Content);
+                this.sessionkey = Encoding.UTF8.GetString(args.Protocol.Content);
             }
         }
 

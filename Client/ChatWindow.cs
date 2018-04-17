@@ -56,15 +56,15 @@ namespace Client
         {
             if (args.Protocol.Type.SequenceEqual(ProtocolType.AddUser))
             {
-                this.AddUserToOnlineBox(Encoding.ASCII.GetString(args.Protocol.Content));
+                this.AddUserToOnlineBox(Encoding.UTF8.GetString(args.Protocol.Content));
             }
             else if (args.Protocol.Type.SequenceEqual(ProtocolType.RemoveUser))
             {
-                this.RemoveUserFromOnlineBox(Encoding.ASCII.GetString(args.Protocol.Content));
+                this.RemoveUserFromOnlineBox(Encoding.UTF8.GetString(args.Protocol.Content));
             }
             else if (args.Protocol.Type.SequenceEqual(ProtocolType.NewMessage))
             {
-                this.AddMessageToChat(Encoding.ASCII.GetString(args.Protocol.Content));
+                this.AddMessageToChat(Encoding.UTF8.GetString(args.Protocol.Content));
             }
         }
 

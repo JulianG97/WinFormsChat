@@ -271,7 +271,7 @@ namespace Server
             {
                 if (args.Protocol.Content != null && args.Protocol.Content.Length >= 1)
                 {
-                    string username = Encoding.ASCII.GetString(args.Protocol.Content);
+                    string username = Encoding.UTF8.GetString(args.Protocol.Content);
                     this.AddUser(username, (NetworkWatcher)sender);
                 }
             }
@@ -279,7 +279,7 @@ namespace Server
             {
                 if (args.Protocol.Content != null && args.Protocol.Content.Length >= 1)
                 {
-                    string usernameAndSessionKey = Encoding.ASCII.GetString(args.Protocol.Content);
+                    string usernameAndSessionKey = Encoding.UTF8.GetString(args.Protocol.Content);
 
                     string[] usernameAndSessionKeyArray = usernameAndSessionKey.Split('-');
 
@@ -293,7 +293,7 @@ namespace Server
             {
                 if (args.Protocol.Content != null && args.Protocol.Content.Length >= 1)
                 {
-                    string usernameAndSessionKey = Encoding.ASCII.GetString(args.Protocol.Content);
+                    string usernameAndSessionKey = Encoding.UTF8.GetString(args.Protocol.Content);
 
                     string[] usernameAndSessionKeyArray = usernameAndSessionKey.Split('-');
 
@@ -307,7 +307,7 @@ namespace Server
             {
                 if (args.Protocol.Content != null && args.Protocol.Content.Length >= 1)
                 {
-                    string message = Encoding.ASCII.GetString(args.Protocol.Content);
+                    string message = Encoding.UTF8.GetString(args.Protocol.Content);
                     this.ForwardMessageToAllUsers(message);
                 }
             }
@@ -360,7 +360,7 @@ namespace Server
                 {
                     // Sends session key to client
                     Protocol protocol = ProtocolCreator.SessionKey();
-                    this.CreateNewUser(username, Encoding.ASCII.GetString(protocol.Content), networkWatcher);
+                    this.CreateNewUser(username, Encoding.UTF8.GetString(protocol.Content), networkWatcher);
 
                     networkWatcher.Send(protocol);
                 }
